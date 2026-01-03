@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "appwrite": "^21.5.0"
+  },
+  "name": "pg-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "tailwindcss": "^4.1.18"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Text-It/PG-Manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Text-It/PG-Manager/issues"
+  },
+  "homepage": "https://github.com/Text-It/PG-Manager#readme"
+}
