@@ -23,3 +23,52 @@ Thumbs.db
 # VS Code (optional)
 # ===============================
 .vscode/
+
+# ===============================
+# Build / Distribution
+# ===============================
+dist/
+build/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tailwind / compiled CSS
+# Ignore compiled CSS (generated from Tailwind CLI)
+app/static/css/tailwind.css
+
+# ===============================
+# Python
+# ===============================
+__pycache__/
+*.py[cod]
+*.py[cod]__
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+instance/
+*.sqlite3
+pip-wheel-metadata/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+myvenv/
+
+# Environment / Secrets
+.env
+
+# Test / Tooling caches
+.pytest_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+

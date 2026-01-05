@@ -1,10 +1,11 @@
-export default {
+module.exports = {
   content: [
-    "./src/html/**/*.html",
-    "./src/js/**/*.js"
+    './app/templates/**/*.html',
+    './app/**/*.py',
+    './src/**/*.html',
   ],
   theme: {
     extend: {},
   },
   plugins: [],
-}
+};

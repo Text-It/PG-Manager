@@ -1,29 +1,13 @@
 {
   "dependencies": {
     "@tailwindcss/cli": "^4.1.18",
-    "appwrite": "^21.5.0"
-  },
-  "name": "pg-manager",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "devDependencies": {
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "concurrently": "^8.0.0"
   },
   "scripts": {
-    "dev": "tailwindcss -i ./src/css/tailwind.css -o ./src/css/output.css --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Text-It/PG-Manager.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/Text-It/PG-Manager/issues"
-  },
-  "homepage": "https://github.com/Text-It/PG-Manager#readme"
+    "build:css": "npx tailwindcss -i ./src/styles/input.css -o ./app/static/css/tailwind.css --minify",
+    "watch:css": "npx tailwindcss -i ./src/styles/input.css -o ./app/static/css/tailwind.css --watch",
+    "watch:flask": "python run.py",
+    "dev": "concurrently -k \"npm:watch:css\" \"npm:watch:flask\""
+  }
 }
