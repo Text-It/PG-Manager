@@ -1,317 +1,631 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PG-Manager - Smart PG Management</title>
-  <link rel="stylesheet" href="/static/css/tailwind.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Outfit', sans-serif; }
-    .glass {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    .text-gradient {
-      background: linear-gradient(to right, #2563eb, #9333ea);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-  </style>
-</head>
-<body class="bg-gray-50 text-gray-900 overflow-x-hidden selection:bg-blue-200 selection:text-blue-900">
-
-  <!-- Decoration Circles -->
-  <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl opacity-50 animate-pulse"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full blur-3xl opacity-50 animate-pulse delay-1000"></div>
-  </div>
-
-  <!-- Navbar -->
-  <header class="fixed top-0 w-full z-50 transition-all duration-300 glass shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16 lg:h-20">
-        <div class="flex-shrink-0 flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl">P</div>
-            <span class="font-bold text-xl tracking-tight text-gray-900">PG-Manager</span>
-        </div>
-        
-        <nav class="hidden lg:flex space-x-8">
-          <a href="#home" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Home</a>
-          <a href="#features" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Features</a>
-          <a href="#how-it-works" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">How it Works</a>
-          <a href="#about" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">About</a>
-        </nav>
-
-        <div class="hidden lg:flex items-center space-x-4">
-          <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Log in</a>
-          <a href="#" class="px-5 py-2.5 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-0.5">Sign up</a>
-        </div>
-
-        <!-- Mobile menu button -->
-        <button class="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none">
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PG-Manager - Smart PG Management</title>
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Outfit", sans-serif;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .text-gradient {
+        background: linear-gradient(to right, #2563eb, #9333ea);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 text-gray-900 overflow-x-hidden selection:bg-blue-200 selection:text-blue-900"
+  >
+    <!-- Decoration Circles -->
+    <div
+      class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+    >
+      <div
+        class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl opacity-50 animate-pulse"
+      ></div>
+      <div
+        class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full blur-3xl opacity-50 animate-pulse delay-1000"
+      ></div>
     </div>
-  </header>
 
-  <!-- Hero Section -->
-  <section id="home" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6">
-        <span class="block text-gray-900">Smart PG Management</span>
-        <span class="block text-gradient mt-2">Made Simple</span>
-      </h1>
-      
-      <div class="h-8 mb-8 text-xl md:text-2xl text-gray-600 font-medium">
-        <span id="typing-text"></span><span class="animate-pulse">|</span>
-      </div>
-
-      <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10">
-        <a href="#" class="px-8 py-4 rounded-full bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group">
-          <span class="relative z-10">Get Started as Owner</span>
-          <div class="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:animate-shine"></div>
-        </a>
-        <a href="#" class="px-8 py-4 rounded-full bg-white text-gray-800 border border-gray-200 font-semibold text-lg hover:bg-gray-50 hover:border-gray-300 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-          Find a PG
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section id="features" class="py-20 bg-white relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Everything You Need</h2>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto">Tailored features for both Property Owners and Tenants to make life easier.</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-12">
-        <!-- Owners Features -->
-        <div class="bg-blue-50/50 rounded-3xl p-8 border border-blue-100 hover:shadow-xl transition-all duration-300 group">
-          <div class="inline-flex items-center gap-3 mb-6 bg-blue-100 px-4 py-2 rounded-full text-blue-700 font-semibold text-sm">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-            For Owners
+    <!-- Navbar -->
+    <header
+      class="fixed top-0 w-full z-50 transition-all duration-300 glass shadow-sm"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16 lg:h-20">
+          <div class="shrink-0 flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-lg bg-linear-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl"
+            >
+              P
+            </div>
+            <span class="font-bold text-xl tracking-tight text-gray-900"
+              >PG-Manager</span
+            >
           </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Manage with Ease</h3>
-          <ul class="space-y-4">
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">Digital Rent Collection & Tracking</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">Room & Bed Inventory Management</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">Tenant Onboarding & Documents</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">Automated Reminders & Notifications</span>
-            </li>
-          </ul>
-        </div>
 
-        <!-- Tenants Features -->
-        <div class="bg-purple-50/50 rounded-3xl p-8 border border-purple-100 hover:shadow-xl transition-all duration-300 group">
-          <div class="inline-flex items-center gap-3 mb-6 bg-purple-100 px-4 py-2 rounded-full text-purple-700 font-semibold text-sm">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-            For Tenants
+          <nav class="hidden lg:flex space-x-8">
+            <a
+              href="#home"
+              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >Home</a
+            >
+            <a
+              href="#features"
+              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >Features</a
+            >
+            <a
+              href="#how-it-works"
+              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >How it Works</a
+            >
+            <a
+              href="#about"
+              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >About</a
+            >
+          </nav>
+
+          <div class="hidden lg:flex items-center space-x-4">
+            <a
+              href="{{ url_for('main.login') }}"
+              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >Log in</a
+            >
+            <a
+              href="{{ url_for('main.signup') }}"
+              class="px-5 py-2.5 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-0.5"
+              >Sign up</a
+            >
           </div>
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">Stay Comfortably</h3>
-          <ul class="space-y-4">
-             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">Find PGs by Location & Amenities</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">Online Booking & Payments</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">Rise Complaints & Requests</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5">✓</div>
-              <span class="ml-3 text-gray-700">View Food Menus & Notices</span>
-            </li>
-          </ul>
+
+          <!-- Mobile menu button -->
+          <button
+            class="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
+          >
+            <svg
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
         </div>
       </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- How It Works -->
-  <section id="how-it-works" class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
-        <div class="flex justify-center gap-4 mb-8">
-            <button class="bg-white px-6 py-2 rounded-full shadow-sm text-blue-600 font-semibold border border-blue-100">For Owners</button>
-            <button class="text-gray-500 px-6 py-2 font-medium hover:text-gray-700">For Tenants</button>
+    <!-- Hero Section -->
+    <section
+      id="home"
+      class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1
+          class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6"
+        >
+          <span class="block text-gray-900">Smart PG Management</span>
+          <span class="block text-gradient mt-2">Made Simple</span>
+        </h1>
+
+        <div class="h-8 mb-8 text-xl md:text-2xl text-gray-600 font-medium">
+          <span id="typing-text"></span><span class="animate-pulse">|</span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+          <a
+            href="#"
+            class="px-8 py-4 rounded-full bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+          >
+            <span class="relative z-10">Get Started as Owner</span>
+            <div
+              class="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:animate-shine"
+            ></div>
+          </a>
+          <a
+            href="#"
+            class="px-8 py-4 rounded-full bg-white text-gray-800 border border-gray-200 font-semibold text-lg hover:bg-gray-50 hover:border-gray-300 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+          >
+            Find a PG
+          </a>
         </div>
       </div>
+    </section>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center relative">
-        <!-- Connecting Line (Desktop) -->
-        <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gray-200 -z-10"></div>
-        
-        <div class="relative group">
-            <div class="w-24 h-24 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <span class="text-4xl">📝</span>
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white relative">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Everything You Need
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Tailored features for both Property Owners and Tenants to make life
+            easier.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-12">
+          <!-- Owners Features -->
+          <div
+            class="bg-blue-50/50 rounded-3xl p-8 border border-blue-100 hover:shadow-xl transition-all duration-300 group"
+          >
+            <div
+              class="inline-flex items-center gap-3 mb-6 bg-blue-100 px-4 py-2 rounded-full text-blue-700 font-semibold text-sm"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+              For Owners
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">
+              Manage with Ease
+            </h3>
+            <ul class="space-y-4">
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >Digital Rent Collection & Tracking</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >Room & Bed Inventory Management</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >Tenant Onboarding & Documents</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >Automated Reminders & Notifications</span
+                >
+              </li>
+            </ul>
+          </div>
+
+          <!-- Tenants Features -->
+          <div
+            class="bg-purple-50/50 rounded-3xl p-8 border border-purple-100 hover:shadow-xl transition-all duration-300 group"
+          >
+            <div
+              class="inline-flex items-center gap-3 mb-6 bg-purple-100 px-4 py-2 rounded-full text-purple-700 font-semibold text-sm"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              For Tenants
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">
+              Stay Comfortably
+            </h3>
+            <ul class="space-y-4">
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >Find PGs by Location & Amenities</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >Online Booking & Payments</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >Rise Complaints & Requests</span
+                >
+              </li>
+              <li class="flex items-start">
+                <div
+                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                >
+                  ✓
+                </div>
+                <span class="ml-3 text-gray-700"
+                  >View Food Menus & Notices</span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            How It Works
+          </h2>
+          <div class="flex justify-center gap-4 mb-8">
+            <button
+              class="bg-white px-6 py-2 rounded-full shadow-sm text-blue-600 font-semibold border border-blue-100"
+            >
+              For Owners
+            </button>
+            <button
+              class="text-gray-500 px-6 py-2 font-medium hover:text-gray-700"
+            >
+              For Tenants
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center relative">
+          <!-- Connecting Line (Desktop) -->
+          <div
+            class="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gray-200 -z-10"
+          ></div>
+
+          <div class="relative group">
+            <div
+              class="w-24 h-24 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+            >
+              <span class="text-4xl">📝</span>
             </div>
             <h3 class="text-xl font-bold mb-2">1. Register</h3>
-            <p class="text-gray-600">Create your account and list your property details.</p>
-        </div>
-        <div class="relative group">
-            <div class="w-24 h-24 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                 <span class="text-4xl">🛌</span>
+            <p class="text-gray-600">
+              Create your account and list your property details.
+            </p>
+          </div>
+          <div class="relative group">
+            <div
+              class="w-24 h-24 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+            >
+              <span class="text-4xl">🛌</span>
             </div>
             <h3 class="text-xl font-bold mb-2">2. Add Rooms</h3>
-            <p class="text-gray-600">Setup room types, beds, and amenities available.</p>
-        </div>
-        <div class="relative group">
-            <div class="w-24 h-24 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                 <span class="text-4xl">🚀</span>
+            <p class="text-gray-600">
+              Setup room types, beds, and amenities available.
+            </p>
+          </div>
+          <div class="relative group">
+            <div
+              class="w-24 h-24 mx-auto bg-white rounded-2xl shadow-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+            >
+              <span class="text-4xl">🚀</span>
             </div>
             <h3 class="text-xl font-bold mb-2">3. Go Live</h3>
-            <p class="text-gray-600">Start accepting bookings and managing tenants.</p>
+            <p class="text-gray-600">
+              Start accepting bookings and managing tenants.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Why Choose Us -->
-  <section class="py-20 bg-white">
+    <!-- Why Choose Us -->
+    <section class="py-20 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100">
-                  <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-4">
-                      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                  </div>
-                  <h3 class="text-lg font-bold mb-2">Super Fast</h3>
-                  <p class="text-gray-600 text-sm">Optimized for speed so you don't wait.</p>
-              </div>
-              <div class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100">
-                  <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mb-4">
-                      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                  </div>
-                  <h3 class="text-lg font-bold mb-2">Secure</h3>
-                  <p class="text-gray-600 text-sm">Data protection with industry standards.</p>
-              </div>
-               <div class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100">
-                  <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mb-4">
-                      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  </div>
-                  <h3 class="text-lg font-bold mb-2">Easy to Use</h3>
-                  <p class="text-gray-600 text-sm">Intuitive interface for zero learning curve.</p>
-              </div>
-              <div class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100">
-                  <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 mb-4">
-                      <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  </div>
-                  <h3 class="text-lg font-bold mb-2">Real-time</h3>
-                  <p class="text-gray-600 text-sm">Live availability and instant updates.</p>
-              </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div
+            class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-4"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Super Fast</h3>
+            <p class="text-gray-600 text-sm">
+              Optimized for speed so you don't wait.
+            </p>
           </div>
+          <div
+            class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mb-4"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Secure</h3>
+            <p class="text-gray-600 text-sm">
+              Data protection with industry standards.
+            </p>
+          </div>
+          <div
+            class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mb-4"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Easy to Use</h3>
+            <p class="text-gray-600 text-sm">
+              Intuitive interface for zero learning curve.
+            </p>
+          </div>
+          <div
+            class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
+          >
+            <div
+              class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 mb-4"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold mb-2">Real-time</h3>
+            <p class="text-gray-600 text-sm">
+              Live availability and instant updates.
+            </p>
+          </div>
+        </div>
       </div>
-  </section>
+    </section>
 
-  <!-- CTA Section -->
-  <section class="py-20 relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-700 opacity-90 -z-10"></div>
+    <!-- CTA Section -->
+    <section class="py-20 relative overflow-hidden">
+      <div
+        class="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-700 opacity-90 -z-10"
+      ></div>
       <div class="max-w-4xl mx-auto px-4 text-center">
-          <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Ready to streamline your PG business?</h2>
-          <p class="text-blue-100 text-lg mb-10">Join hundreds of owners who manage their properties effortlessly.</p>
-          <a href="#" class="inline-block px-10 py-5 bg-white text-blue-700 font-bold rounded-full hover:bg-blue-50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">Get Started Now</a>
+        <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">
+          Ready to streamline your PG business?
+        </h2>
+        <p class="text-blue-100 text-lg mb-10">
+          Join hundreds of owners who manage their properties effortlessly.
+        </p>
+        <a
+          href="#"
+          class="inline-block px-10 py-5 bg-white text-blue-700 font-bold rounded-full hover:bg-blue-50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+          >Get Started Now</a
+        >
       </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 text-white pt-16 pb-8">
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-16 pb-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-              <div class="col-span-1 md:col-span-1">
-                  <div class="flex items-center gap-2 mb-4">
-                      <div class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold">P</div>
-                      <span class="text-xl font-bold">PG-Manager</span>
-                  </div>
-                  <p class="text-gray-400 text-sm">Modern solution for PG management. Simplifying stays for everyone.</p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+          <div class="col-span-1 md:col-span-1">
+            <div class="flex items-center gap-2 mb-4">
+              <div
+                class="w-8 h-8 rounded bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold"
+              >
+                P
               </div>
-              <div>
-                  <h4 class="font-bold mb-4">Product</h4>
-                  <ul class="space-y-2 text-gray-400 text-sm">
-                      <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
-                      <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
-                      <li><a href="#" class="hover:text-white transition-colors">Safety</a></li>
-                  </ul>
-              </div>
-              <div>
-                  <h4 class="font-bold mb-4">Company</h4>
-                  <ul class="space-y-2 text-gray-400 text-sm">
-                      <li><a href="#" class="hover:text-white transition-colors">About Us</a></li>
-                      <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
-                      <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                  </ul>
-              </div>
-              <div>
-                  <h4 class="font-bold mb-4">Connect</h4>
-                  <div class="flex space-x-4">
-                      <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">𝕏</a>
-                      <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">in</a>
-                      <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">f</a>
-                  </div>
-              </div>
+              <span class="text-xl font-bold">PG-Manager</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              Modern solution for PG management. Simplifying stays for everyone.
+            </p>
           </div>
-          <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
-              &copy; 2024 PG-Manager. All rights reserved.
+          <div>
+            <h4 class="font-bold mb-4">Product</h4>
+            <ul class="space-y-2 text-gray-400 text-sm">
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Pricing</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Safety</a
+                >
+              </li>
+            </ul>
           </div>
+          <div>
+            <h4 class="font-bold mb-4">Company</h4>
+            <ul class="space-y-2 text-gray-400 text-sm">
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >About Us</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Contact</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-white transition-colors"
+                  >Privacy Policy</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-bold mb-4">Connect</h4>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors"
+                >𝕏</a
+              >
+              <a
+                href="#"
+                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors"
+                >in</a
+              >
+              <a
+                href="#"
+                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors"
+                >f</a
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm"
+        >
+          &copy; 2024 PG-Manager. All rights reserved.
+        </div>
       </div>
-  </footer>
+    </footer>
 
-  <script>
-    // Typing Animation
-    const texts = ["Manage PGs", "Find Your Perfect Stay", "Book Instantly", "Track Payments"];
-    let count = 0;
-    let index = 0;
-    let currentText = "";
-    let letter = "";
-    
-    (function type() {
-      if (count === texts.length) {
-        count = 0;
-      }
-      currentText = texts[count];
-      letter = currentText.slice(0, ++index);
-      
-      document.querySelector("#typing-text").textContent = letter;
-      
-      if (letter.length === currentText.length) {
-        setTimeout(() => {
+    <script>
+      // Typing Animation
+      const texts = [
+        "Manage PGs",
+        "Find Your Perfect Stay",
+        "Book Instantly",
+        "Track Payments",
+      ];
+      let count = 0;
+      let index = 0;
+      let currentText = "";
+      let letter = "";
+
+      (function type() {
+        if (count === texts.length) {
+          count = 0;
+        }
+        currentText = texts[count];
+        letter = currentText.slice(0, ++index);
+
+        document.querySelector("#typing-text").textContent = letter;
+
+        if (letter.length === currentText.length) {
+          setTimeout(() => {
             // Delete effect (optional, or just wait and switch)
-             // Simple clear and switch for now or backspace
-             // Let's do a quick pause then clear for next
-             setTimeout(() => {
-                 index = 0;
-                 count++;
-                 type();
-             }, 2000); 
-        }, 100); // pause at end of word
-      } else {
-        setTimeout(type, 100);
-      }
-    })();
-  </script>
-</body>
+            // Simple clear and switch for now or backspace
+            // Let's do a quick pause then clear for next
+            setTimeout(() => {
+              index = 0;
+              count++;
+              type();
+            }, 2000);
+          }, 100); // pause at end of word
+        } else {
+          setTimeout(type, 100);
+        }
+      })();
+    </script>
+  </body>
 </html>
