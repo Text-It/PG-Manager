@@ -12,35 +12,68 @@
       rel="stylesheet"
     />
     <style>
-      body {
-        font-family: "Outfit", sans-serif;
+      :root{
+        --nav-900: #293462; /* deep navy */
+        --brand-1: #D61C4E; /* magenta/red */
+        --brand-2: #FEB139; /* amber */
+        --brand-3: #FFF80A; /* bright yellow */
+        --nav-900-rgb: 41,52,98;
+        --brand-1-rgb: 214,28,78;
+        --brand-2-rgb: 254,177,57;
+        --brand-3-rgb: 255,248,10;
+        --glass-bg: rgba(255,255,255,0.85);
       }
+      body { font-family: "Outfit", sans-serif; color: rgba(17,24,39,0.95); }
       .glass {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: var(--glass-bg);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
       }
       .text-gradient {
-        background: linear-gradient(to right, #2563eb, #9333ea);
+        background: linear-gradient(90deg, var(--nav-900) 0%, var(--brand-1) 55%, var(--brand-2) 100%);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
       }
+
+      /* Brand utilities */
+      .brand-avatar{ background: linear-gradient(135deg, var(--nav-900), var(--brand-1)); }
+      .bg-cta-gradient{ background: linear-gradient(135deg, rgba(var(--nav-900-rgb),1) 0%, rgba(var(--brand-1-rgb),1) 55%, rgba(var(--brand-2-rgb),1) 100%); }
+      .btn-primary{ background: linear-gradient(90deg, var(--brand-1), var(--brand-2)); color: white; box-shadow: 0 10px 30px rgba(var(--brand-1-rgb),0.12); }
+      .btn-outline{ background: white; color: #0f172a; border: 1px solid rgba(var(--nav-900-rgb),0.08); }
+      .accent-pill{ background: linear-gradient(90deg, var(--brand-1), var(--brand-2)); color: white; }
+      .bg-footer{ background: linear-gradient(180deg, rgba(var(--nav-900-rgb),1) 0%, rgba(12,14,25,1) 100%); }
+      .badge-nav{ background: rgba(var(--nav-900-rgb),0.06); color: var(--nav-900); }
+      .text-nav{ color: var(--nav-900); }
+      .badge-brand{ background: linear-gradient(90deg, rgba(var(--brand-1-rgb),0.07), rgba(var(--brand-2-rgb),0.07)); color: var(--brand-1); }
+      .text-brand1{ color: var(--brand-1); }
+      .bg-brand1{ background: var(--brand-1); color: white; }
+      .social-hover:hover{ background: var(--brand-1); color: white; }
+      .decoration-1{ background: rgba(var(--nav-900-rgb),0.12); }
+      .decoration-2{ background: rgba(var(--brand-1-rgb),0.12); }
+
+      /* selection color */
+      ::selection{ background: rgba(var(--brand-2-rgb),0.18); color: #293462; }
+
+      /* small accessibility helper */
+      .focus-ring:focus{ outline: 2px solid rgba(var(--brand-1-rgb),0.12); outline-offset: 2px; }
+      .card-nav{ background: rgba(var(--nav-900-rgb),0.04); border: 1px solid rgba(var(--nav-900-rgb),0.06); }
+      .card-brand{ background: rgba(var(--brand-1-rgb),0.03); border: 1px solid rgba(var(--brand-1-rgb),0.06); }
     </style>
   </head>
   <body
-    class="bg-gray-50 text-gray-900 overflow-x-hidden selection:bg-blue-200 selection:text-blue-900"
+    class="bg-gray-50 text-gray-900 overflow-x-hidden"
   >
     <!-- Decoration Circles -->
     <div
       class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
     >
       <div
-        class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl opacity-50 animate-pulse"
+        class="absolute top-[-10%] left-[-10%] w-96 h-96 decoration-1 rounded-full blur-3xl opacity-50 animate-pulse"
       ></div>
       <div
-        class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full blur-3xl opacity-50 animate-pulse delay-1000"
+        class="absolute bottom-[-10%] right-[-10%] w-96 h-96 decoration-2 rounded-full blur-3xl opacity-50 animate-pulse delay-1000"
       ></div>
     </div>
 
@@ -52,7 +85,7 @@
         <div class="flex justify-between items-center h-16 lg:h-20">
           <div class="shrink-0 flex items-center gap-2">
             <div
-              class="w-8 h-8 rounded-lg bg-linear-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl"
+              class="w-8 h-8 rounded-lg brand-avatar flex items-center justify-center text-white font-bold text-xl"
             >
               P
             </div>
@@ -64,22 +97,22 @@
           <nav class="hidden lg:flex space-x-8">
             <a
               href="#home"
-              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              class="text-gray-600 hover:text-nav font-medium transition-colors"
               >Home</a
             >
             <a
               href="#features"
-              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              class="text-gray-600 hover:text-nav font-medium transition-colors"
               >Features</a
             >
             <a
               href="#how-it-works"
-              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              class="text-gray-600 hover:text-nav font-medium transition-colors"
               >How it Works</a
             >
             <a
               href="#about"
-              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              class="text-gray-600 hover:text-nav font-medium transition-colors"
               >About</a
             >
           </nav>
@@ -87,12 +120,12 @@
           <div class="hidden lg:flex items-center space-x-4">
             <a
               href="{{ url_for('main.login') }}"
-              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              class="text-gray-600 hover:text-nav font-medium transition-colors"
               >Log in</a
             >
             <a
               href="{{ url_for('main.signup') }}"
-              class="px-5 py-2.5 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-0.5"
+              class="px-5 py-2.5 rounded-full btn-primary font-medium hover:opacity-95 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
               >Sign up</a
             >
           </div>
@@ -139,16 +172,16 @@
         <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10">
           <a
             href="#"
-            class="px-8 py-4 rounded-full bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
+            class="btn-primary px-8 py-4 rounded-full font-semibold text-lg hover:opacity-95 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
           >
             <span class="relative z-10">Get Started as Owner</span>
             <div
-              class="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:animate-shine"
+              class="absolute inset-0 bg-white/12 transform -skew-x-12 -translate-x-full group-hover:animate-shine"
             ></div>
           </a>
           <a
             href="#"
-            class="px-8 py-4 rounded-full bg-white text-gray-800 border border-gray-200 font-semibold text-lg hover:bg-gray-50 hover:border-gray-300 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+            class="btn-outline px-8 py-4 rounded-full font-semibold text-lg hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
           >
             Find a PG
           </a>
@@ -172,10 +205,10 @@
         <div class="grid md:grid-cols-2 gap-12">
           <!-- Owners Features -->
           <div
-            class="bg-blue-50/50 rounded-3xl p-8 border border-blue-100 hover:shadow-xl transition-all duration-300 group"
+            class="card-nav rounded-3xl p-8 hover:shadow-xl transition-all duration-300 group"
           >
             <div
-              class="inline-flex items-center gap-3 mb-6 bg-blue-100 px-4 py-2 rounded-full text-blue-700 font-semibold text-sm"
+              class="inline-flex items-center gap-3 mb-6 badge-nav text-nav px-4 py-2 rounded-full font-semibold text-sm"
             >
               <svg
                 class="w-5 h-5"
@@ -198,7 +231,7 @@
             <ul class="space-y-4">
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -208,7 +241,7 @@
               </li>
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -218,7 +251,7 @@
               </li>
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -228,7 +261,7 @@
               </li>
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -241,10 +274,10 @@
 
           <!-- Tenants Features -->
           <div
-            class="bg-purple-50/50 rounded-3xl p-8 border border-purple-100 hover:shadow-xl transition-all duration-300 group"
+            class="card-brand rounded-3xl p-8 hover:shadow-xl transition-all duration-300 group"
           >
             <div
-              class="inline-flex items-center gap-3 mb-6 bg-purple-100 px-4 py-2 rounded-full text-purple-700 font-semibold text-sm"
+              class="inline-flex items-center gap-3 mb-6 badge-brand text-brand1 px-4 py-2 rounded-full font-semibold text-sm"
             >
               <svg
                 class="w-5 h-5"
@@ -267,7 +300,7 @@
             <ul class="space-y-4">
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -277,7 +310,7 @@
               </li>
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -287,7 +320,7 @@
               </li>
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -297,7 +330,7 @@
               </li>
               <li class="flex items-start">
                 <div
-                  class="shrink-0 w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-white mt-0.5"
+                  class="shrink-0 w-6 h-6 rounded-full bg-brand1 flex items-center justify-center text-white mt-0.5"
                 >
                   ✓
                 </div>
@@ -320,7 +353,7 @@
           </h2>
           <div class="flex justify-center gap-4 mb-8">
             <button
-              class="bg-white px-6 py-2 rounded-full shadow-sm text-blue-600 font-semibold border border-blue-100"
+              class="bg-white px-6 py-2 rounded-full shadow-sm text-nav font-semibold border border-transparent"
             >
               For Owners
             </button>
@@ -383,7 +416,7 @@
             class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
           >
             <div
-              class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 mb-4"
+              class="w-12 h-12 badge-nav rounded-lg flex items-center justify-center text-nav mb-4"
             >
               <svg
                 class="w-6 h-6"
@@ -408,7 +441,7 @@
             class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
           >
             <div
-              class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-green-600 mb-4"
+              class="w-12 h-12 badge-nav rounded-lg flex items-center justify-center text-nav mb-4"
             >
               <svg
                 class="w-6 h-6"
@@ -433,7 +466,7 @@
             class="p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
           >
             <div
-              class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 mb-4"
+              class="w-12 h-12 badge-brand rounded-lg flex items-center justify-center text-brand1 mb-4"
             >
               <svg
                 class="w-6 h-6"
@@ -486,31 +519,31 @@
     <!-- CTA Section -->
     <section class="py-20 relative overflow-hidden">
       <div
-        class="absolute inset-0 bg-linear-to-br from-blue-600 to-purple-700 opacity-90 -z-10"
+        class="absolute inset-0 bg-cta-gradient opacity-95 -z-10"
       ></div>
       <div class="max-w-4xl mx-auto px-4 text-center">
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">
           Ready to streamline your PG business?
         </h2>
-        <p class="text-blue-100 text-lg mb-10">
+        <p class="text-amber-100 text-lg mb-10">
           Join hundreds of owners who manage their properties effortlessly.
         </p>
         <a
           href="#"
-          class="inline-block px-10 py-5 bg-white text-blue-700 font-bold rounded-full hover:bg-blue-50 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+          class="inline-block px-10 py-5 btn-primary font-bold rounded-full hover:opacity-95 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >Get Started Now</a
         >
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white pt-16 pb-8">
+    <footer class="bg-footer text-white pt-16 pb-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div class="col-span-1 md:col-span-1">
             <div class="flex items-center gap-2 mb-4">
               <div
-                class="w-8 h-8 rounded bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold"
+                class="w-8 h-8 rounded brand-avatar flex items-center justify-center font-bold"
               >
                 P
               </div>
@@ -565,17 +598,17 @@
             <div class="flex space-x-4">
               <a
                 href="#"
-                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors"
+                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center social-hover transition-colors"
                 >𝕏</a
               >
               <a
                 href="#"
-                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors"
+                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center social-hover transition-colors"
                 >in</a
               >
               <a
                 href="#"
-                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors"
+                class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center social-hover transition-colors"
                 >f</a
               >
             </div>
