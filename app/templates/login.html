@@ -3,51 +3,103 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sign In</title>
+  <title>Sign In - PG-Manager</title>
   <link rel="stylesheet" href="/static/css/tailwind.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/custom.css" />
 </head>
-<body class="bg-gray-100 text-gray-900">
-  <main class="grid min-h-screen min-w-screen place-items-center p-4">
-    <div class="mx-auto w-full max-w-md p-4 bg-white rounded-lg shadow">
-      <h2 class="mb-2 text-center text-2xl font-bold tracking-tight">Sign In</h2>
-      <p class="text-gray-500 mb-6 text-center text-base">Enter your email and password to sign in</p>
+<body class="bg-gray-50 text-gray-900 font-sans relative overflow-hidden">
 
-      <form method="post" action="{{ url_for('main.login') }}" class="space-y-6">
-        <div class="space-y-2">
-          <label for="email" class="text-sm font-semibold">Email</label>
-          <input id="email" name="email" type="email" placeholder="someone@example.com" required class="w-full h-11 px-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
+  <!-- Background Decorations -->
+  <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 decoration-1 rounded-full blur-3xl opacity-50 animate-pulse"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 decoration-2 rounded-full blur-3xl opacity-50 animate-pulse delay-1000"></div>
+  </div>
 
-        <div class="space-y-2">
-          <label for="password" class="text-sm font-semibold">Password</label>
-          <div class="relative">
-            <input id="password" name="password" type="password" placeholder="********" required class="w-full h-11 px-3 pr-24 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <button id="toggle-password" type="button" class="absolute top-1/2 right-1.5 -translate-y-1/2 px-3 py-1 text-sm text-gray-600 bg-transparent hover:text-gray-900">Show</button>
+  <!-- Back Button -->
+  <div class="absolute top-6 left-6 z-20">
+    <a href="/" class="flex items-center gap-2 text-slate-600 hover:text-brand1 transition-colors font-medium group">
+      <div class="w-8 h-8 rounded-full bg-white/80 glass flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      </div>
+      <span class="hidden sm:inline">Back to Home</span>
+    </a>
+  </div>
+
+  <main class="grid min-h-screen place-items-center p-4">
+    <div class="w-full max-w-[400px]"> <!-- Compact Max Width -->
+      
+      <!-- Logo (Smaller vertical margin) -->
+      <div class="flex justify-center mb-6">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-lg brand-avatar flex items-center justify-center text-white font-bold text-xl shadow-md">
+            P
           </div>
+          <span class="font-bold text-xl tracking-tight text-slate-900">PG-Manager</span>
         </div>
-
-        <div class="text-end">
-          <a href="#" class="text-blue-600 text-sm font-semibold hover:underline">Forgot Password?</a>
-        </div>
-
-        <button type="submit" class="w-full py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700">Sign In</button>
-      </form>
-
-      <div class="my-6">
-        <a href="#" class="inline-flex items-center justify-center w-full px-4 py-3 text-sm border border-gray-200 rounded-md hover:bg-gray-50">
-          <svg class="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-          </svg>
-          Sign in with Google
-        </a>
       </div>
 
-      <p class="text-gray-500 flex items-center justify-center gap-1 text-center">Not registered?
-        <a href="{{ url_for('main.signup') }}" class="text-blue-600 font-semibold hover:underline">Create account</a>
-      </p>
+      <!-- Glass Card -->
+      <div class="glass rounded-2xl p-6 md:p-8 shadow-xl backdrop-blur-xl bg-white/70 border border-white/50 relative overflow-hidden">
+        
+        <!-- Tab Switcher -->
+        <div class="flex p-1 bg-gray-100/80 rounded-xl mb-6 relative">
+          <a href="#" class="flex-1 py-1.5 text-center text-sm font-bold text-slate-900 bg-white shadow-sm rounded-lg transition-all">Sign In</a>
+          <a href="{{ url_for('main.signup') }}" class="flex-1 py-1.5 text-center text-sm font-medium text-slate-500 hover:text-slate-700 transition-all">Sign Up</a>
+        </div>
+
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-bold text-slate-900">Welcome Back</h2>
+          <p class="text-slate-500 text-xs mt-1">Enter your details to sign in</p>
+        </div>
+
+        <form method="post" action="{{ url_for('main.login') }}" class="space-y-4">
+          <div class="space-y-1">
+            <label for="email" class="text-xs font-bold text-slate-700 ml-1 uppercase tracking-wide">Email</label>
+            <input id="email" name="email" type="email" placeholder="john@example.com" required 
+                   class="w-full h-10 px-3 bg-white/60 border border-gray-200 rounded-lg focus:outline-none focus:border-brand1 focus:ring-1 focus:ring-brand1/20 text-sm transition-all" />
+          </div>
+
+          <div class="space-y-1">
+            <div class="flex justify-between items-center px-1">
+               <label for="password" class="text-xs font-bold text-slate-700 uppercase tracking-wide">Password</label>
+               <a href="#" class="text-brand1 text-xs font-semibold hover:underline">Forgot?</a>
+            </div>
+            <div class="relative">
+              <input id="password" name="password" type="password" placeholder="••••••••" required 
+                     class="w-full h-10 px-3 pr-20 bg-white/60 border border-gray-200 rounded-lg focus:outline-none focus:border-brand1 focus:ring-1 focus:ring-brand1/20 text-sm transition-all" />
+              <button id="toggle-password" type="button" 
+                      class="absolute top-1/2 right-2 -translate-y-1/2 px-2 py-1 text-[10px] font-bold text-slate-500 hover:text-brand1 transition-colors uppercase tracking-wider bg-gray-100 rounded hover:bg-gray-200">
+                  Show
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" 
+                  class="w-full py-2.5 mt-2 rounded-xl btn-primary font-bold text-white text-sm shadow-md shadow-brand1/20 hover:shadow-brand1/30 hover:-translate-y-0.5 transition-all duration-200">
+            Sign In
+          </button>
+        </form>
+
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+          <div class="relative flex justify-center text-[10px] uppercase font-bold tracking-wider"><span class="bg-white/50 px-2 text-slate-400 rounded glass">Or</span></div>
+        </div>
+
+        <div>
+          <a href="#" class="flex items-center justify-center w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm group gap-3">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" class="fill-[#4285F4]"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" class="fill-[#34A853]"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" class="fill-[#FBBC05]"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" class="fill-[#EA4335]"/>
+            </svg>
+            <span class="text-sm font-semibold text-slate-700">Continue with Google</span>
+          </a>
+        </div>
+      </div>
     </div>
   </main>
 
