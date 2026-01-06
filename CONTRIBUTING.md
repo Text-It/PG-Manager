@@ -72,8 +72,11 @@ If you prefer separate terminals:
 - Terminal B: `python run.py` (or `.\
 
 
-
-
+#for psycopg2'
+'''
+pip install psycopg2
+'''
+ 
 
 
 
