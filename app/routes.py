@@ -30,6 +30,11 @@ def signup():
         return redirect(url_for('main.index'))
     return render_template('signup.html')
 
+
+@bp.route('/owner/dashboard')
+def owner_dashboard():
+    return render_template('owner/dashboard.html')
+
 DB_CONFIG = {
     "dbname": "pgmanagement",
     "user": "pguser",
