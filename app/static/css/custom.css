@@ -60,6 +60,15 @@ html.dark .bg-white\/60 { background-color: rgba(30, 41, 59, 0.6); }
 html.dark .bg-white\/40 { background-color: rgba(30, 41, 59, 0.4); }
 html.dark .border-white\/50 { border-color: rgba(255, 255, 255, 0.1); }
 
+/* Indigo Theme Dark Mode Overrides (Wi-Fi Section) */
+html.dark .bg-indigo-50 { background-color: rgba(49, 46, 129, 0.2); /* indigo-900/20 */ }
+html.dark .bg-indigo-100 { background-color: rgba(49, 46, 129, 0.5); /* indigo-900/50 */ }
+html.dark .text-indigo-900 { color: #e0e7ff; /* indigo-100 */ }
+html.dark .text-indigo-800\/60 { color: #a5b4fc; /* indigo-300 */ }
+html.dark .text-indigo-600 { color: #818cf8; /* indigo-400 */ }
+html.dark .border-indigo-100, html.dark .border-indigo-200 { border-color: rgba(99, 102, 241, 0.2); }
+
+
 
 html.dark .bg-gray-50\/50 { background-color: rgba(15, 23, 42, 0.5); }
 

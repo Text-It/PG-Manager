@@ -147,6 +147,9 @@
                     <button id="btn-billing" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('billing')">
                         Billing & Payments
                     </button>
+                    <button id="btn-property" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('property')">
+                        Property Rules
+                    </button>
                     <button id="btn-data" class="w-full text-left px-4 py-2.5 rounded-xl font-medium text-sm text-slate-600 hover:bg-white hover:shadow-sm hover:text-slate-900 transition-all tab-trigger" onclick="switchTab('data')">
                         Data Management
                     </button>
@@ -282,6 +285,67 @@
                              </div>
                          </div>
                      </div>
+
+                </div>
+
+                <!-- Tab: Property Rules -->
+                <div id="tab-property" class="tab-content space-y-6 hidden">
+                    <h2 class="text-lg font-bold text-slate-900 border-b border-gray-100 pb-4">Property Rules & Info</h2>
+                    
+                    <!-- Wi-Fi Details -->
+                    <div class="bg-indigo-50 rounded-2xl p-6 border border-indigo-100 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" /></svg>
+                            </div>
+                            <h3 class="text-sm font-bold text-indigo-900">Wi-Fi Connection</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-indigo-800/60">Network Name (SSID)</label>
+                                <input type="text" value="PG_Manager_Guest" class="w-full px-3 py-2 bg-white/60 border border-indigo-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none text-indigo-900 font-medium">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="block text-xs font-medium text-indigo-800/60">Password</label>
+                                <div class="relative">
+                                    <input type="text" value="Welcome@2024" class="w-full px-3 py-2 bg-white/60 border border-indigo-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 focus:outline-none text-indigo-900 font-mono">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timings & Access -->
+                    <div class="space-y-4">
+                         <h3 class="text-sm font-bold text-slate-800">Timings & Access</h3>
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div class="space-y-2">
+                                <label class="block text-sm font-medium text-slate-700">Gate Closing Time</label>
+                                <input type="time" value="22:00" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                <p class="text-xs text-slate-400">Tenants must inform before entering after this time.</p>
+                             </div>
+                             <div class="space-y-2">
+                                <label class="block text-sm font-medium text-slate-700">Breakfast Timing</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="time" value="07:30" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                    <span class="text-slate-400 font-medium">-</span>
+                                    <input type="time" value="09:30" class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1">
+                                </div>
+                             </div>
+                         </div>
+                    </div>
+
+                    <!-- General Rules -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-slate-700">House Rules / Notice Board</label>
+                        <textarea rows="6" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand1/20 focus:border-brand1 leading-relaxed" placeholder="Write rules here...">
+1. No loud music after 10 PM.
+2. Keep the common area clean.
+3. Visitors allowed only in the reception area.
+4. Turn off AC when leaving the room.
+                        </textarea>
+                        <p class="text-xs text-slate-400">This will be visible on the Tenant App dashboard.</p>
+                    </div>
 
                 </div>
 
