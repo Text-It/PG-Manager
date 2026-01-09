@@ -34,6 +34,25 @@ def signup():
     return render_template('signup.html')
 
 
+@bp.route('/owner/dashboard')
+def owner_dashboard():
+    return render_template('owner/dashboard.html')
+
+
+@bp.route('/owner/tenants')
+def owner_tenants():
+    return render_template('owner/tenants.html')
+
+
+@bp.route('/owner/add-tenant')
+def owner_add_tenant():
+    return render_template('owner/add_tenant.html')
+
+
+@bp.route('/owner/tenants/<int:tenant_id>')
+def owner_tenant_details(tenant_id):
+    return render_template('owner/tenant_details.html', tenant_id=tenant_id)
+
 DB_CONFIG = {
     "dbname":os.getenv("DB_NAME"),
             "user":os.getenv("DB_USER"),
