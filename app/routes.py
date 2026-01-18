@@ -26,7 +26,7 @@ def login():
         
         conn = get_db_connection()
         if not conn:
-            flash('Database connection error')
+            flash('Database connection error', 'error')
             return render_template('login.html')
             
         cur = conn.cursor()
@@ -35,25 +35,31 @@ def login():
             cur.execute("SELECT id, password_hash, role FROM users WHERE email = %s", (email,))
             user = cur.fetchone()
             
-            if user and check_password_hash(user[1], password):
-                session['user_id'] = user[0]
-                session['role'] = user[2]
-                
-                # Get Name for Session (Optional but nice)
-                if user[2] == 'OWNER':
-                     cur.execute("SELECT full_name FROM owners WHERE user_id = %s", (user[0],))
-                     owner = cur.fetchone()
-                     if owner: session['name'] = owner[0]
-                     return redirect(url_for('main.owner_dashboard'))
-                elif user[2] == 'TENANT':
-                     # Placeholder logic for tenant
-                     return redirect(url_for('main.index')) 
-            else:
-                flash('Invalid email or password', 'error')
+            if not user:
+                flash('User does not exist. Please Sign Up first.', 'error')
+                return render_template('login.html')
+            
+            if not check_password_hash(user[1], password):
+                flash('Incorrect password. Please try again.', 'error')
+                return render_template('login.html')
+
+            # Login Success
+            session['user_id'] = user[0]
+            session['role'] = user[2]
+            
+            # Get Name
+            if user[2] == 'OWNER':
+                    cur.execute("SELECT full_name FROM owners WHERE user_id = %s", (user[0],))
+                    owner = cur.fetchone()
+                    if owner: session['name'] = owner[0]
+                    return redirect(url_for('main.owner_dashboard'))
+            elif user[2] == 'TENANT':
+                    # Placeholder logic
+                    return redirect(url_for('main.index')) 
                 
         except Exception as e:
             print(e)
-            flash('An error occurred during login')
+            flash('An error occurred during login', 'error')
         finally:
             cur.close()
             conn.close()
@@ -70,14 +76,14 @@ def signup():
         role = request.form.get('role') # 'OWNER' or 'TENANT'
         
         if not role:
-            flash("Please select a role", "error")
+            flash("Please form role", "error") # Should be hidden input, but safety check
             return redirect(url_for('main.signup'))
 
         hashed_pw = generate_password_hash(password)
         
         conn = get_db_connection()
         if not conn:
-            flash("Database Error")
+            flash("Database Error", "error")
             return redirect(url_for('main.signup'))
             
         cur = conn.cursor()
@@ -85,26 +91,19 @@ def signup():
             # Check if email already taken
             cur.execute("SELECT id FROM users WHERE email = %s", (email,))
             if cur.fetchone():
-                flash("Email already registered", "error")
+                flash("Email already registered. Please Login instead.", "error")
                 return redirect(url_for('main.signup'))
 
             if role == 'OWNER':
-                # 1. Create User
+                # ... (Owner creation logic remains same) ...
                 cur.execute(
                     "INSERT INTO users (email, password_hash, role) VALUES (%s, %s, 'OWNER') RETURNING id",
                     (email, hashed_pw)
                 )
                 user_id = cur.fetchone()[0]
-                
-                # 2. Create Owner Profile
-                cur.execute(
-                    "INSERT INTO owners (user_id, full_name) VALUES (%s, %s)",
-                    (user_id, name)
-                )
-                
+                cur.execute("INSERT INTO owners (user_id, full_name) VALUES (%s, %s)", (user_id, name))
                 conn.commit()
                 
-                # Auto Login
                 session['user_id'] = user_id
                 session['role'] = 'OWNER'
                 session['name'] = name
@@ -116,31 +115,25 @@ def signup():
                 tenant_record = cur.fetchone()
                 
                 if not tenant_record:
-                    flash("No invitation found for this email. Please ask your PG owner to add you first.", "error")
+                    # Specific Error as requested
+                    flash("You are not associated with any PG. Please verify your email or contact your PG Owner.", "error")
                     return redirect(url_for('main.signup'))
                     
                 tenant_id = tenant_record[0]
                 
-                # 2. Create User
+                # ... (Tenant creation logic remains same) ...
                 cur.execute(
                     "INSERT INTO users (email, password_hash, role) VALUES (%s, %s, 'TENANT') RETURNING id",
                     (email, hashed_pw)
                 )
                 user_id = cur.fetchone()[0]
-                
-                # 3. Link User to Tenant Record
-                cur.execute(
-                    "UPDATE tenants SET user_id = %s, onboarding_status = 'ACTIVE' WHERE id = %s",
-                    (user_id, tenant_id)
-                )
-                
+                cur.execute("UPDATE tenants SET user_id = %s, onboarding_status = 'ACTIVE' WHERE id = %s", (user_id, tenant_id))
                 conn.commit()
                 
-                 # Auto Login
                 session['user_id'] = user_id
                 session['role'] = 'TENANT'
                 session['name'] = name
-                return redirect(url_for('main.index')) # Tenant Dashboard Placeholder
+                return redirect(url_for('main.index'))
 
         except Exception as e:
             conn.rollback()
