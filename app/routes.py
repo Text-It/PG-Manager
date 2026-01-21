@@ -156,15 +156,90 @@ def logout():
 
 @bp.route('/owner/dashboard')
 def owner_dashboard():
-    if session.get('role') != 'OWNER':
-        return redirect(url_for('main.login'))
-    return render_template('owner/dashboard.html', name=session.get('name', 'Owner'))
+    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    
+    conn = get_db_connection()
+    if not conn: return render_template('owner/dashboard.html', name=session.get('name', 'Owner'), total_income=0)
+    
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id FROM owners WHERE user_id = %s", (session.get('user_id'),))
+        owner_row = cur.fetchone()
+        if not owner_row:
+             return render_template('owner/dashboard.html', name=session.get('name', 'Owner'), total_income=0)
+        
+        owner_id = owner_row[0]
+        
+        # Calculate Total Monthly Potential Income (Sum of rents of all tenants)
+        cur.execute("SELECT SUM(monthly_rent) FROM tenants WHERE owner_id = %s", (owner_id,))
+        total_income = cur.fetchone()[0] or 0
+        
+        # Placeholder for Expenses (Not implemented yet)
+        total_spent = 0
+        
+        net_profit = total_income - total_spent
+        
+        return render_template('owner/dashboard.html', 
+                             name=session.get('name', 'Owner'),
+                             total_income=total_income,
+                             total_spent=total_spent,
+                             net_profit=net_profit)
+                             
+    except Exception as e:
+        print(f"Error dashboard stats: {e}")
+        return render_template('owner/dashboard.html', name=session.get('name', 'Owner'), total_income=0)
+    finally:
+        cur.close()
+        conn.close()
 
 
 @bp.route('/owner/tenants')
 def owner_tenants():
     if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
-    return render_template('owner/tenants.html')
+    
+    conn = get_db_connection()
+    if not conn:
+        flash("Database Error", "error")
+        return render_template('owner/tenants.html', tenants=[])
+        
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id FROM owners WHERE user_id = %s", (session.get('user_id'),))
+        owner_id = cur.fetchone()[0]
+        
+        # Fetch Tenants
+        cur.execute("""
+            SELECT id, full_name, email, phone_number, room_number, 
+                   onboarding_status, monthly_rent, created_at 
+            FROM tenants 
+            WHERE owner_id = %s 
+            ORDER BY created_at DESC
+        """, (owner_id,))
+        
+        # Convert to list of dicts for template
+        rows = cur.fetchall()
+        tenants = []
+        for row in rows:
+            tenants.append({
+                'id': row[0],
+                'full_name': row[1],
+                'email': row[2],
+                'phone': row[3],
+                'room_no': row[4],
+                'status': row[5],
+                'rent': row[6],
+                'joined': row[7].strftime('%d %b %Y') if row[7] else 'N/A'
+            })
+            
+        return render_template('owner/tenants.html', tenants=tenants)
+        
+    except Exception as e:
+        print(f"Error fetching tenants: {e}")
+        flash("Could not load tenants", "error")
+        return render_template('owner/tenants.html', tenants=[])
+    finally:
+        cur.close()
+        conn.close()
 
 @bp.route('/owner/add-tenant', methods=['GET', 'POST'])
 def owner_add_tenant():

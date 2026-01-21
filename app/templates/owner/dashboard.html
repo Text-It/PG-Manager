@@ -205,8 +205,8 @@
                         +12.5% <svg class="w-3 h-3 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                       </span>
                   </div>
-                  <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Income</h3>
-                  <p class="text-2xl font-bold text-slate-800 mt-1">₹ 1,45,000</p>
+                  <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Monthly Income</h3>
+                  <p class="text-2xl font-bold text-slate-800 mt-1">₹ {{ total_income }}</p>
               </div>
 
               <!-- Spent -->
@@ -221,7 +221,7 @@
                       </span>
                   </div>
                   <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Spent</h3>
-                  <p class="text-2xl font-bold text-slate-800 mt-1">₹ 32,400</p>
+                  <p class="text-2xl font-bold text-slate-800 mt-1">₹ {{ total_spent }}</p>
               </div>
 
               <!-- Profit -->
@@ -233,7 +233,7 @@
                       </div>
                   </div>
                   <h3 class="text-white/80 text-xs font-bold uppercase tracking-wider relative z-10">Net Profit</h3>
-                  <p class="text-3xl font-extra-bold mt-1 relative z-10">₹ 1,12,600</p>
+                  <p class="text-3xl font-extra-bold mt-1 relative z-10">₹ {{ net_profit }}</p>
               </div>
           </div>
 

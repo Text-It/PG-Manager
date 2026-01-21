@@ -218,126 +218,58 @@
                       </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-50" id="tenant-list">
-                      <!-- Row 1 -->
-                      <tr class="group hover:bg-gray-50/80 transition-colors">
-                          <td class="px-6 py-4">
-                              <div class="flex items-center gap-3">
-                                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" class="w-10 h-10 rounded-full bg-gray-100">
-                                  <div>
-                                      <p class="text-sm font-bold text-slate-900">Alice Smith</p>
-                                      <p class="text-xs text-slate-500">alice@example.com</p>
+                      {% if not tenants %}
+                        <tr>
+                            <td colspan="7" class="text-center py-8 text-slate-500">
+                                <p>No tenants found. Click "Add Tenant" to get started.</p>
+                            </td>
+                        </tr>
+                      {% else %}
+                        {% for tenant in tenants %}
+                           <tr class="group hover:bg-gray-50/80 transition-colors">
+                              <td class="px-6 py-4">
+                                  <div class="flex items-center gap-3">
+                                      <!-- Avatar seed is name -->
+                                      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ tenant.full_name }}" class="w-10 h-10 rounded-full bg-gray-100">
+                                      <div>
+                                          <p class="text-sm font-bold text-slate-900">{{ tenant.full_name }}</p>
+                                          <p class="text-xs text-slate-500">{{ tenant.email }}</p>
+                                      </div>
                                   </div>
-                              </div>
-                          </td>
-                          <td class="px-6 py-4">
-                              <p class="text-sm font-medium text-slate-700">Room 101</p>
-                              <p class="text-xs text-slate-400">Building A, Floor 1</p>
-                          </td>
-                          <td class="px-6 py-4">
-                              <p class="text-sm font-medium text-slate-700">+91 98765 43210</p>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="text-sm text-slate-600 font-medium">12 Jan 2024</span>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600">
-                                  Paid
-                              </span>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-600">
-                                  Active
-                              </span>
-                          </td>
-                          <td class="px-6 py-4 text-right">
-                              <div class="flex items-center justify-end gap-1">
-                                <button title="Message" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg></button>
-                                <a href="/owner/tenants/1" title="View Profile" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></a>
-                                <button title="Edit" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
-                              </div>
-                          </td>
-                      </tr>
-                      
-                      <!-- Row 2 -->
-                       <tr class="group hover:bg-gray-50/80 transition-colors">
-                          <td class="px-6 py-4">
-                              <div class="flex items-center gap-3">
-                                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Bob" class="w-10 h-10 rounded-full bg-gray-100">
-                                  <div>
-                                      <p class="text-sm font-bold text-slate-900">Bob Jones</p>
-                                      <p class="text-xs text-slate-500">bob.j@example.com</p>
+                              </td>
+                              <td class="px-6 py-4">
+                                  <p class="text-sm font-medium text-slate-700">Room {{ tenant.room_no }}</p>
+                                  <p class="text-xs text-slate-400">Rent: ₹{{ tenant.rent }}</p>
+                              </td>
+                              <td class="px-6 py-4">
+                                  <p class="text-sm font-medium text-slate-700">{{ tenant.phone if tenant.phone else 'N/A' }}</p>
+                              </td>
+                              <td class="px-6 py-4">
+                                  <span class="text-sm text-slate-600 font-medium">{{ tenant.joined }}</span>
+                              </td>
+                              <td class="px-6 py-4">
+                                  <!-- Placeholder for Rent Status logic -->
+                                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-500">
+                                      --
+                                  </span>
+                              </td>
+                              <td class="px-6 py-4">
+                                  {% if tenant.status == 'ACTIVE' %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600">Active</span>
+                                  {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-600">Pending</span>
+                                  {% endif %}
+                              </td>
+                              <td class="px-6 py-4 text-right">
+                                  <div class="flex items-center justify-end gap-1">
+                                    <a href="#" title="Message" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg></a>
+                                    <a href="/owner/tenants/{{ tenant.id }}" title="View Profile" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></a>
+                                    <a href="#" title="Edit" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></a>
                                   </div>
-                              </div>
-                          </td>
-                          <td class="px-6 py-4">
-                              <p class="text-sm font-medium text-slate-700">Room 304</p>
-                              <p class="text-xs text-slate-400">Building B, Floor 3</p>
-                          </td>
-                          <td class="px-6 py-4">
-                              <p class="text-sm font-medium text-slate-700">+91 98765 00000</p>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="text-sm text-slate-600 font-medium">10 Feb 2024</span>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-600">
-                                  Due: ₹12k
-                              </span>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-600">
-                                  Active
-                              </span>
-                          </td>
-                          <td class="px-6 py-4 text-right">
-                              <div class="flex items-center justify-end gap-1">
-                                <button title="Message" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg></button>
-                                <a href="/owner/tenants/1" title="View Profile" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></a>
-                                <button title="Edit" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
-                              </div>
-                          </td>
-                      </tr>
-                      
-                       <!-- Row 3 -->
-                       <tr class="group hover:bg-gray-50/80 transition-colors">
-                          <td class="px-6 py-4">
-                              <div class="flex items-center gap-3">
-                                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Charlie" class="w-10 h-10 rounded-full bg-gray-100">
-                                  <div>
-                                      <p class="text-sm font-bold text-slate-900">Charlie Day</p>
-                                      <p class="text-xs text-slate-500">charlie@example.com</p>
-                                  </div>
-                              </div>
-                          </td>
-                          <td class="px-6 py-4">
-                              <p class="text-sm font-medium text-slate-700">Room 102</p>
-                              <p class="text-xs text-slate-400">Building A, Floor 1</p>
-                          </td>
-                          <td class="px-6 py-4">
-                              <p class="text-sm font-medium text-slate-700">+91 98765 11111</p>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="text-sm text-slate-600 font-medium">05 Mar 2024</span>
-                          </td>
-                          <td class="px-6 py-4">
-                               <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600">
-                                  Paid
-                              </span>
-                          </td>
-                          <td class="px-6 py-4">
-                              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-600">
-                                  Active
-                              </span>
-                          </td>
-                          <td class="px-6 py-4 text-right">
-                              <div class="flex items-center justify-end gap-1">
-                                <button title="Message" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg></button>
-                                <button title="View Profile" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></button>
-                                <button title="Edit" class="p-2 text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
-                              </div>
-                          </td>
-                      </tr>
-
+                              </td>
+                           </tr>
+                        {% endfor %}
+                      {% endif %}
                   </tbody>
               </table>
           </div>
