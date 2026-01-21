@@ -42,6 +42,13 @@ CREATE TABLE IF NOT EXISTS tenants (
     email VARCHAR(255) NOT NULL,
     phone_number VARCHAR(20),
     room_number VARCHAR(20),
+    bed_number VARCHAR(10),
+    
+    -- Financials
+    monthly_rent INTEGER NOT NULL,
+    security_deposit INTEGER,
+    lease_start DATE,
+    lease_end DATE,
     
     -- Status
     onboarding_status VARCHAR(20) DEFAULT 'PENDING',

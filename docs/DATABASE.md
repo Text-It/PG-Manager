@@ -37,7 +37,15 @@ Stores tenant details. **Critical:** This table acts as a whitelist for tenant s
 | `id` | UUID (PK) | Unique Tenant Profile ID |
 | `owner_id` | UUID (FK) | Link to the Owner managing them |
 | `user_id` | UUID (FK) | Nullable. Links to `users` once signed up. |
+| `full_name` | VARCHAR | Tenant Name |
 | `email` | VARCHAR | Used for invitation verification |
+| `phone_number` | VARCHAR | Contact Number |
+| `room_number` | VARCHAR | Assigned Room |
+| `bed_number` | VARCHAR | Assigned Bed (Optional) |
+| `monthly_rent` | INTEGER | Monthly Rent Amount (Required) |
+| `security_deposit`| INTEGER | Security Deposit Amount |
+| `lease_start` | DATE | Lease Start Date |
+| `lease_end` | DATE | Lease End Date |
 | `onboarding_status`| VARCHAR | 'PENDING' vs 'ACTIVE' |
 
 ## 3. Key Workflows

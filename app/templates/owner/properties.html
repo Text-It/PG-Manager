@@ -1,0 +1,136 @@
+{% extends "owner/dashboard.html" %}
+
+{% block content %}
+<div class="flex-1 h-full overflow-y-auto relative z-10 p-4 md:p-8 custom-scrollbar">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-8 gap-4 flex-wrap">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-900">My Properties</h1>
+            <p class="text-slate-500 text-sm md:text-base hidden sm:block">Manage your building layouts and room capacities.</p>
+        </div>
+        <div class="flex items-center gap-3">
+             <button onclick="document.getElementById('add-room-modal').classList.remove('hidden')" class="btn-primary hover:shadow-lg hover:-translate-y-0.5 transition-all text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-brand1/20 shadow-lg">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                Add Room
+            </button>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for category, message in messages %}
+            <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-2
+                {% if category == 'error' %} bg-red-50 text-red-600 border border-red-100
+                {% elif category == 'success' %} bg-green-50 text-green-600 border border-green-100
+                {% else %} bg-blue-50 text-blue-600 border border-blue-100 {% endif %}">
+              {% if category == 'error' %}
+                <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              {% elif category == 'success' %}
+                 <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              {% else %}
+                  <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              {% endif %}
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Properties List -->
+    <div class="space-y-8">
+        {% for property in properties %}
+        <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <div>
+                     <h2 class="text-xl font-bold text-slate-800">{{ property.name }}</h2>
+                     <p class="text-sm text-slate-500">{{ property.address }}</p>
+                </div>
+                <!-- <button class="text-sm font-bold text-brand1 hover:underline">Edit Building</button> -->
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-xs uppercase tracking-wider text-slate-400 border-b border-gray-100">
+                            <th class="px-6 py-4 font-bold">Room No</th>
+                            <th class="px-6 py-4 font-bold">Floor</th>
+                            <th class="px-6 py-4 font-bold">Total Beds (Capacity)</th>
+                            <th class="px-6 py-4 font-bold">Current Occupancy</th>
+                            <th class="px-6 py-4 font-bold">Rent (₹)</th>
+                            <th class="px-6 py-4 font-bold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        {% for room in property.rooms %}
+                        <tr class="group hover:bg-gray-50/80 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-800">{{ room.room_number }}</td>
+                            <td class="px-6 py-4 text-slate-600">{{ room.floor }}</td>
+                            <td class="px-6 py-4">
+                                <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-sm font-bold">{{ room.capacity }} Beds</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                 <span class="text-slate-600 font-medium">{{ room.occupancy }} / {{ room.capacity }}</span>
+                                 <div class="w-24 h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                                     <div class="h-full bg-brand1 rounded-full" style="--occupancy: {{ room.occupancy_pct }}%; width: var(--occupancy);"></div>
+                                 </div>
+                            </td>
+                            <td class="px-6 py-4 font-medium text-slate-700">₹ {{ room.rent }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="text-slate-400 hover:text-brand1 transition-colors"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not property.rooms %}
+            <div class="p-8 text-center text-slate-500">
+                <p>No rooms added yet.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Room Modal -->
+<div id="add-room-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
+        <button onclick="document.getElementById('add-room-modal').classList.add('hidden')" class="absolute right-6 top-6 text-slate-400 hover:text-slate-600">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        
+        <h2 class="text-xl font-bold text-slate-900 mb-6">Add New Room</h2>
+        
+        <form action="/owner/properties/add-room" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-1.5">Room Number</label>
+                <input type="text" name="room_number" placeholder="e.g. 101, A-2" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-brand1 focus:ring-4 focus:ring-brand1/10 outline-none transition-all font-medium">
+            </div>
+            
+             <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1.5">Floor</label>
+                    <input type="number" name="floor" value="0" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-brand1 focus:ring-4 focus:ring-brand1/10 outline-none transition-all font-medium">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1.5">Capacity (Beds)</label>
+                    <input type="number" name="capacity" value="2" min="1" required class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-brand1 focus:ring-4 focus:ring-brand1/10 outline-none transition-all font-medium">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-1.5">Default Rent (₹)</label>
+                <input type="number" name="rent_amount" placeholder="5000" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-brand1 focus:ring-4 focus:ring-brand1/10 outline-none transition-all font-medium">
+            </div>
+            
+            <button type="submit" class="w-full btn-primary py-3.5 rounded-xl text-white font-bold text-lg shadow-lg shadow-brand1/20 hover:shadow-xl hover:-translate-y-0.5 transition-all mt-2">
+                Create Room
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
