@@ -266,6 +266,30 @@ def owner_dashboard():
         """, (owner_id,))
         recent_movements = cur.fetchall()
         
+        # 7. Pending Complaints (High Priority First)
+        cur.execute("""
+            SELECT c.title, t.room_number, t.full_name, c.priority, c.description
+            FROM complaints c
+            JOIN tenants t ON c.tenant_id = t.id
+            WHERE c.owner_id = %s AND c.status = 'PENDING'
+            ORDER BY 
+                CASE c.priority 
+                    WHEN 'HIGH' THEN 1 
+                    WHEN 'MEDIUM' THEN 2 
+                    WHEN 'LOW' THEN 3 
+                END, 
+                c.created_at DESC
+            LIMIT 3
+        """, (owner_id,))
+        pending_complaints = cur.fetchall()
+        
+        # Count total high priority pending
+        cur.execute("""
+            SELECT COUNT(*) FROM complaints 
+            WHERE owner_id = %s AND status = 'PENDING' AND priority = 'HIGH'
+        """, (owner_id,))
+        high_priority_count = cur.fetchone()[0] or 0
+        
         return render_template('owner/dashboard.html', 
                              name=session.get('name', 'Owner'),
                              total_income=total_income,
@@ -282,7 +306,9 @@ def owner_dashboard():
                              collection_percentage=collection_percentage,
                              rent_collection_style=rent_collection_style,
                              expiring_leases=expiring_leases,
-                             recent_movements=recent_movements)
+                             recent_movements=recent_movements,
+                             pending_complaints=pending_complaints,
+                             high_priority_count=high_priority_count)
                              
     except Exception as e:
         print(f"Error dashboard stats: {e}")
