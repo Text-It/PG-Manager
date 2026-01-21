@@ -111,7 +111,7 @@ def signup():
 
             elif role == 'TENANT':
                 # 1. Verify Invitation
-                cur.execute("SELECT id, owner_id FROM tenants WHERE email = %s", (email,))
+                cur.execute("SELECT id, owner_id, onboarding_status FROM tenants WHERE email = %s", (email,))
                 tenant_record = cur.fetchone()
                 
                 if not tenant_record:
@@ -120,6 +120,11 @@ def signup():
                     return redirect(url_for('main.signup'))
                     
                 tenant_id = tenant_record[0]
+                status = tenant_record[2]
+                
+                if status == 'DRAFT':
+                    flash("Your admission is still in Draft. Please ask your Owner to finalize it.", "error")
+                    return redirect(url_for('main.signup'))
                 
                 # ... (Tenant creation logic remains same) ...
                 cur.execute(
@@ -392,13 +397,41 @@ def owner_tenants():
         owner_id = cur.fetchone()[0]
         
         # Fetch Tenants
-        cur.execute("""
+        filter_type = request.args.get('filter', 'all')
+        
+        # Base Query
+        query = """
             SELECT id, full_name, email, phone_number, room_number, 
                    onboarding_status, monthly_rent, created_at 
             FROM tenants 
             WHERE owner_id = %s 
-            ORDER BY created_at DESC
-        """, (owner_id,))
+        """
+        params = [owner_id]
+        
+        # Apply Filters
+        if filter_type == 'active':
+            query += " AND onboarding_status = 'ACTIVE'"
+        elif filter_type == 'rent-due':
+            # Active tenants who strictly haven't paid properly for the current month
+            import datetime
+            current_month = datetime.datetime.now().strftime('%Y-%m')
+            query += """ 
+                AND onboarding_status = 'ACTIVE'
+                AND id NOT IN (
+                    SELECT tenant_id FROM payments 
+                    WHERE payment_month = %s AND status = 'COMPLETED'
+                )
+            """
+            params.append(current_month)
+        elif filter_type == 'lease-expiring':
+            # Expiring in next 30 days
+            query += " AND onboarding_status = 'ACTIVE' AND lease_end BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days'"
+        elif filter_type == 'past':
+            query += " AND onboarding_status IN ('EXITED', 'LEFT', 'MOVED_OUT', 'REJECTED')"
+        
+        query += " ORDER BY created_at DESC"
+        
+        cur.execute(query, tuple(params))
         
         # Convert to list of dicts for template
         rows = cur.fetchall()
@@ -415,12 +448,43 @@ def owner_tenants():
                 'joined': row[7].strftime('%d %b %Y') if row[7] else 'N/A'
             })
             
-        return render_template('owner/tenants.html', tenants=tenants)
+        # Stats
+        total_tenants = len(tenants)
+        active_tenants = sum(1 for t in tenants if t['status'] == 'ACTIVE')
+        notice_tenants = sum(1 for t in tenants if t['status'] == 'NOTICE')
+        
+        # Calculate Rent Due (Simple logic: Active tenants who haven't paid this month)
+        # For now, we'll approximate this by checking against the 'payments' table or just using a placeholder logic if payments aren't fully linked yet.
+        # Ideally: Check if payment exists for current month.
+        # Since we don't have a robust 'bill generation' system yet, let's query who has paid this month.
+        
+        import datetime
+        current_month = datetime.datetime.now().strftime('%Y-%m')
+        cur.execute("""
+            SELECT COUNT(DISTINCT tenant_id) FROM payments 
+            WHERE payment_month = %s AND status = 'COMPLETED'
+        """, (current_month,))
+        paid_count = cur.fetchone()[0]
+        
+        # Approximate due: Active tenants - Paid tenants
+        # This is a bit rough but works for now.
+        rent_due_count = max(0, active_tenants - paid_count)
+
+        return render_template('owner/tenants.html', 
+                             tenants=tenants,
+                             stats={
+                                 'total': total_tenants,
+                                 'active': active_tenants,
+                                 'rent_due': rent_due_count,
+                                 'notice': notice_tenants
+                             })
         
     except Exception as e:
         print(f"Error fetching tenants: {e}")
         flash("Could not load tenants", "error")
-        return render_template('owner/tenants.html', tenants=[])
+        return render_template('owner/tenants.html', 
+                             tenants=[],
+                             stats={'total': 0, 'active': 0, 'rent_due': 0, 'notice': 0})
     finally:
         cur.close()
         conn.close()
@@ -468,6 +532,13 @@ def owner_add_tenant():
             if cur.fetchone():
                 flash(f"Tenant with email '{email}' already exists.", "error")
                 return redirect(url_for('main.owner_add_tenant'))
+                
+            # 1.5 Check if email already registered in system (as User/Owner)
+            cur.execute("SELECT id, role FROM users WHERE email = %s", (email,))
+            existing_user = cur.fetchone()
+            if existing_user:
+                flash(f"Email '{email}' is already registered as a {existing_user[1]}. Cannot add as new tenant.", "error")
+                return redirect(url_for('main.owner_add_tenant'))
 
             # 2. Check if Phone Number already exists
             if phone:
@@ -476,14 +547,22 @@ def owner_add_tenant():
                     flash(f"Tenant with phone number '{phone}' is already added.", "error")
                     return redirect(url_for('main.owner_add_tenant'))
                 
+            # Determine Status
+            action = request.form.get('action')
+            status = 'DRAFT' if action == 'draft' else 'PENDING'
+
             # Insert Tenant
             cur.execute("""
                 INSERT INTO tenants (owner_id, full_name, email, phone_number, room_number, monthly_rent, onboarding_status)
-                VALUES (%s, %s, %s, %s, %s, %s, 'PENDING')
-            """, (owner_id, full_name, email, phone, room_no, rent))
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (owner_id, full_name, email, phone, room_no, rent, status))
             
             conn.commit()
-            flash("Tenant added successfully! They can now sign up.", "success")
+            if status == 'DRAFT':
+                flash("Tenant details saved as Draft.", "success")
+            else:
+                flash("Tenant added successfully! They can now sign up.", "success")
+            
             return redirect(url_for('main.owner_tenants'))
 
         except Exception as e:
@@ -519,6 +598,33 @@ def export_tenants():
         headers={"Content-disposition": "attachment; filename=tenants.csv"}
     )
 
+
+@bp.route('/owner/tenants/update-status', methods=['POST'])
+def update_tenant_status():
+    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    
+    tenant_id = request.form.get('tenant_id')
+    new_status = request.form.get('status')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        if new_status == 'REJECTED':
+             cur.execute("DELETE FROM tenants WHERE id = %s", (tenant_id,))
+             flash("Draft tenant rejected and removed.", "success")
+        else:
+             cur.execute("UPDATE tenants SET onboarding_status = %s WHERE id = %s", (new_status, tenant_id))
+             flash(f"Tenant status updated to {new_status}", "success")
+             
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        flash("Failed to update status", "error")
+    finally:
+        cur.close()
+        conn.close()
+        
+    return redirect(url_for('main.owner_tenants'))
 
 @bp.route('/owner/tenants/<int:tenant_id>')
 def owner_tenant_details(tenant_id):
