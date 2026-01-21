@@ -193,8 +193,8 @@ def owner_dashboard():
         
         owner_id = owner_row[0]
         
-        # Calculate Total Monthly Potential Income (Sum of rents of all tenants)
-        cur.execute("SELECT SUM(monthly_rent) FROM tenants WHERE owner_id = %s", (owner_id,))
+        # Calculate Total Monthly Potential Income (Sum of rents of ACTIVE tenants only)
+        cur.execute("SELECT SUM(monthly_rent) FROM tenants WHERE owner_id = %s AND onboarding_status = 'ACTIVE'", (owner_id,))
         total_income = cur.fetchone()[0] or 0
         
         # Placeholder for Expenses (Not implemented yet)
@@ -212,8 +212,8 @@ def owner_dashboard():
         capacity_row = cur.fetchone()
         total_capacity = capacity_row[0] or 0
         
-        # 2. Total Tenants (Occupied Beds)
-        cur.execute("SELECT COUNT(*) FROM tenants WHERE owner_id = %s", (owner_id,))
+        # 2. Total Tenants (Occupied Beds - Exclude Drafts/Past)
+        cur.execute("SELECT COUNT(*) FROM tenants WHERE owner_id = %s AND onboarding_status IN ('ACTIVE', 'PENDING', 'NOTICE')", (owner_id,))
         total_tenants = cur.fetchone()[0] or 0
         
         # 3. Calculate Stats
@@ -591,12 +591,21 @@ def owner_add_tenant():
             # Determine Status
             action = request.form.get('action')
             status = 'DRAFT' if action == 'draft' else 'PENDING'
+            
+            # Lookup Room ID
+            cur.execute("""
+                SELECT r.id FROM rooms r
+                JOIN properties p ON r.property_id = p.id
+                WHERE p.owner_id = %s AND r.room_number = %s
+            """, (owner_id, room_no))
+            room_row = cur.fetchone()
+            room_id = room_row[0] if room_row else None
 
             # Insert Tenant
             cur.execute("""
-                INSERT INTO tenants (owner_id, full_name, email, phone_number, room_number, monthly_rent, onboarding_status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (owner_id, full_name, email, phone, room_no, rent, status))
+                INSERT INTO tenants (owner_id, full_name, email, phone_number, room_number, room_id, monthly_rent, onboarding_status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (owner_id, full_name, email, phone, room_no, room_id, rent, status))
             
             conn.commit()
             if status == 'DRAFT':
@@ -618,7 +627,40 @@ def owner_add_tenant():
              cur.close()
              conn.close()
 
-    return render_template('owner/add_tenant.html')
+    conn = get_db_connection()
+    if conn:
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM owners WHERE user_id = %s", (session.get('user_id'),))
+        owner_id = cur.fetchone()[0]
+        
+        # Fetch Rooms with Availability
+        cur.execute("""
+            SELECT r.id, r.room_number, r.capacity, r.rent_amount,
+                   (SELECT COUNT(*) FROM tenants t WHERE t.room_id = r.id AND t.onboarding_status IN ('ACTIVE', 'PENDING', 'NOTICE')) as current_occupancy
+            FROM rooms r
+            JOIN properties p ON r.property_id = p.id
+            WHERE p.owner_id = %s
+            ORDER BY r.room_number
+        """, (owner_id,))
+        
+        all_rooms = cur.fetchall()
+        available_rooms = []
+        for r in all_rooms:
+            r_id, r_num, r_cap, r_rent, r_occ = r
+            if r_occ < r_cap:
+                available_rooms.append({
+                    'id': r_id,
+                    'number': r_num,
+                    'available': r_cap - r_occ,
+                    'rent': r_rent
+                })
+        
+        cur.close()
+        conn.close()
+    else:
+        available_rooms = []
+
+    return render_template('owner/add_tenant.html', rooms=available_rooms)
 
 
 @bp.route('/owner/settings')
@@ -704,8 +746,8 @@ def owner_properties():
             rooms = []
             for room in room_rows:
                 r_id = room[0]
-                # Count current tenants in this room
-                cur.execute("SELECT COUNT(*) FROM tenants WHERE room_id = %s", (r_id,))
+                # Count current tenants in this room (Exclude Drafts/Past)
+                cur.execute("SELECT COUNT(*) FROM tenants WHERE room_id = %s AND onboarding_status IN ('ACTIVE', 'PENDING', 'NOTICE')", (r_id,))
                 occupancy = cur.fetchone()[0]
                 
                 capacity = room[3]
