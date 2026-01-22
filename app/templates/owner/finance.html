@@ -77,10 +77,17 @@
         <button onclick="switchTab('expenses')" id="tab-btn-expenses" class="pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-all">
             Expenses
         </button>
+        <button onclick="switchTab('approvals')" id="tab-btn-approvals" class="pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-all flex items-center gap-2">
+            Approvals
+            {% if pending_approvals %}
+            <span class="bg-indigo-100 text-indigo-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{{ pending_approvals|length }}</span>
+            {% endif %}
+        </button>
     </div>
 
     <!-- Content: Income (Rent Grid) -->
     <div id="tab-income" class="transition-opacity duration-300">
+        <!-- ... (Existing Grid) ... -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for tenant in tenants %}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow relative overflow-hidden group">
@@ -121,6 +128,7 @@
 
     <!-- Content: Expenses (List) -->
     <div id="tab-expenses" class="hidden transition-opacity duration-300">
+        <!-- ... (Existing Expense Content) ... -->
         <div class="flex justify-end mb-4">
             <button onclick="document.getElementById('expenseModal').classList.remove('hidden')" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
@@ -164,6 +172,59 @@
             </table>
         </div>
     </div>
+
+    <!-- Content: Pending Approvals -->
+    <div id="tab-approvals" class="hidden transition-opacity duration-300">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for payment in pending_approvals %}
+            <div class="bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+                 <div class="absolute right-0 top-0 w-24 h-24 bg-indigo-50 rounded-full blur-2xl -mr-6 -mt-6 transition-all group-hover:bg-indigo-100"></div>
+                 <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                                {{ payment.tenant_name[0] }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-800">{{ payment.tenant_name }}</p>
+                                <p class="text-xs text-slate-500">Room {{ payment.room_number }}</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-lg">+₹{{ payment.amount }}</span>
+                    </div>
+
+                    <div class="space-y-2 mb-4">
+                        <div class="p-2 bg-gray-50 rounded-lg border border-gray-100">
+                             <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Transaction ID</p>
+                             <p class="text-xs font-mono text-slate-600 font-medium break-all">{{ payment.remarks.replace('Txn Ref: ', '') }}</p>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>Date: {{ payment.payment_date }}</span>
+                            <span>Submitted: {{ payment.created_at }}</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <form action="{{ url_for('main.reject_payment', payment_id=payment.id) }}" method="POST">
+                            <button type="submit" class="w-full py-2.5 bg-white border border-red-200 text-red-600 rounded-xl text-sm font-bold hover:bg-red-50 transition-colors">Reject</button>
+                        </form>
+                        <form action="{{ url_for('main.approve_payment', payment_id=payment.id) }}" method="POST">
+                            <button type="submit" class="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">Verify</button>
+                        </form>
+                    </div>
+                 </div>
+            </div>
+            {% endfor %}
+            {% if not pending_approvals %}
+             <div class="col-span-full py-12 text-center">
+                 <div class="inline-flex p-4 bg-gray-50 rounded-full mb-3 text-gray-400">
+                     <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                 </div>
+                 <p class="text-slate-500 font-medium">No pending approvals.</p>
+             </div>
+            {% endif %}
+        </div>
+    </div>
 </main>
 
 <!-- Modals -->
@@ -175,18 +236,20 @@
         // Toggle Content
         document.getElementById('tab-income').classList.toggle('hidden', tab !== 'income');
         document.getElementById('tab-expenses').classList.toggle('hidden', tab !== 'expenses');
+        document.getElementById('tab-approvals').classList.toggle('hidden', tab !== 'approvals');
         
-        // Toggle Buttons
+        // Toggle Buttons (Reset All)
         const btnIncome = document.getElementById('tab-btn-income');
         const btnExpenses = document.getElementById('tab-btn-expenses');
+        const btnApprovals = document.getElementById('tab-btn-approvals');
         
-        if (tab === 'income') {
-            btnIncome.className = "pb-3 text-sm font-bold text-brand1 border-b-2 border-brand1 transition-all";
-            btnExpenses.className = "pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-all";
-        } else {
-            btnIncome.className = "pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-all";
-            btnExpenses.className = "pb-3 text-sm font-bold text-brand1 border-b-2 border-brand1 transition-all";
-        }
+        const inactiveClass = "pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-all";
+        const activeClass = "pb-3 text-sm font-bold text-brand1 border-b-2 border-brand1 transition-all";
+        
+        btnIncome.className = tab === 'income' ? activeClass : inactiveClass;
+        btnExpenses.className = tab === 'expenses' ? activeClass : inactiveClass;
+        // Keep flex items center gap-2 for Approvals
+        btnApprovals.className = (tab === 'approvals' ? activeClass : inactiveClass) + " flex items-center gap-2";
     }
 </script>
 {% endblock %}

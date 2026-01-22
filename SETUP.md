@@ -63,10 +63,11 @@ PG-Manager uses a schema migration approach. You need to run the SQL scripts in 
     psql -U postgres -d pg_manager -f database_schemas/04_add_payments.sql
     psql -U postgres -d pg_manager -f database_schemas/05_add_complaints.sql
     psql -U postgres -d pg_manager -f database_schemas/06_add_expenses.sql
+    psql -U postgres -d pg_manager -f database_schemas/07_update_settings_schema.sql
     ```
 
     **Option C: Using pgAdmin / GUI**
-    Open the Query Tool for `pg_manager` database and Copy-Paste the content of each file in `database_schemas/` sequentially (01 to 06) and execute them.
+    Open the Query Tool for `pg_manager` database and Copy-Paste the content of each file in `database_schemas/` sequentially (01 to 07) and execute them.
 
 ---
 

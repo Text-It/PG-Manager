@@ -163,7 +163,12 @@ def logout():
 @bp.app_template_filter('time_ago')
 def time_ago(date):
     if not date: return ''
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, date as d
+    
+    # Handle datetime.date objects (no time)
+    if not isinstance(date, datetime) and isinstance(date, d):
+        date = datetime.combine(date, datetime.min.time())
+        
     now = datetime.now(timezone.utc) if date.tzinfo else datetime.now()
     
     diff = now - date
@@ -229,6 +234,7 @@ def owner_dashboard():
                                   expiring_leases=[],
                                   recent_movements=[],
                                   pending_complaints=[],
+                                  pending_approvals=[],
                                   high_priority_count=0,
                                   recent_activity=[])
         
@@ -286,11 +292,12 @@ def owner_dashboard():
         total_expected_rent = stats_row[1] or 0
         
         # Total Collected (Payments this month)
+        # Total Collected (Payments this month - COMPLETED ONLY)
         cur.execute("""
             SELECT COUNT(DISTINCT tenant_id), COALESCE(SUM(amount), 0)
             FROM payments
             JOIN tenants ON payments.tenant_id = tenants.id
-            WHERE tenants.owner_id = %s AND payment_month = %s
+            WHERE tenants.owner_id = %s AND payment_month = %s AND payments.status = 'COMPLETED'
         """, (owner_id, current_month))
         payment_row = cur.fetchone()
         
@@ -300,12 +307,27 @@ def owner_dashboard():
         tenants_pending = max(0, total_active_tenants - tenants_paid)
         
         # Progress Calculation
-        if total_active_tenants > 0:
-            collection_percentage = int((tenants_paid / total_active_tenants) * 100)
+        if total_expected_rent > 0:
+            collection_percentage = int((total_collected / total_expected_rent) * 100)
         else:
             collection_percentage = 0
             
         rent_collection_style = f"width: {collection_percentage}%;"
+
+        # 5. Fetch Pending Payments & Approvals
+        cur.execute("""
+            SELECT p.id, t.full_name, p.amount, p.payment_date, p.remarks, t.room_number 
+            FROM payments p
+            JOIN tenants t ON p.tenant_id = t.id
+            WHERE t.owner_id = %s AND p.status = 'PENDING'
+            ORDER BY p.created_at DESC
+            LIMIT 3
+        """, (owner_id,))
+        pending_approvals = cur.fetchall()
+        
+        # Count total pending for "View All" link
+        cur.execute("SELECT COUNT(*) FROM payments p JOIN tenants t ON p.tenant_id = t.id WHERE t.owner_id = %s AND p.status = 'PENDING'", (owner_id,))
+        total_pending_count = cur.fetchone()[0] or 0
 
          # 5. Lease Expiries (Next 30 Days)
         thirty_days_later = datetime.now().date() + timedelta(days=30)
@@ -411,11 +433,13 @@ def owner_dashboard():
                              expiring_leases=expiring_leases,
                              recent_movements=recent_movements,
                              pending_complaints=pending_complaints,
+                             pending_approvals=pending_approvals,
+                             total_pending_count=total_pending_count,
                              high_priority_count=high_priority_count,
                              recent_activity=recent_activity)
                              
     except Exception as e:
-        print(f"Error dashboard stats: {e}")
+        print(f"Dashboard Error: {e}")
         return render_template('owner/dashboard.html', 
                              name=session.get('name', 'Owner'),
                              total_income=0,
@@ -433,11 +457,48 @@ def owner_dashboard():
                              expiring_leases=[],
                              recent_movements=[],
                              pending_complaints=[],
+                             pending_approvals=[],
                              high_priority_count=0,
                              recent_activity=[])
     finally:
         cur.close()
         conn.close()
+
+@bp.route('/owner/payment/approve/<payment_id>', methods=['POST'])
+def approve_payment(payment_id):
+    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE payments SET status = 'COMPLETED' WHERE id = %s", (payment_id,))
+        conn.commit()
+        flash("Payment verified successfully!", "success")
+    except Exception as e:
+        conn.rollback()
+        flash("Error verifying payment.", "error")
+    finally:
+        cur.close()
+        conn.close()
+    return redirect(url_for('main.owner_dashboard'))
+
+@bp.route('/owner/payment/reject/<payment_id>', methods=['POST'])
+def reject_payment(payment_id):
+    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE payments SET status = 'FAILED' WHERE id = %s", (payment_id,))
+        conn.commit()
+        flash("Payment rejected.", "info")
+    except Exception as e:
+        conn.rollback()
+        flash("Error rejecting payment.", "error")
+    finally:
+        cur.close()
+        conn.close()
+    return redirect(url_for('main.owner_dashboard'))
 
 
 @bp.route('/owner/tenants')
@@ -1257,12 +1318,35 @@ def owner_finance():
                 'date': row[4].strftime('%d %b')
             })
             
+        # Fetch Pending Approvals (ALL)
+        cur.execute("""
+            SELECT p.id, t.full_name, p.amount, p.payment_date, p.remarks, t.room_number, p.created_at 
+            FROM payments p
+            JOIN tenants t ON p.tenant_id = t.id
+            WHERE t.owner_id = %s AND p.status = 'PENDING'
+            ORDER BY p.created_at DESC
+        """, (owner_id,))
+        pending_approvals_rows = cur.fetchall()
+
+        pending_approvals = []
+        for row in pending_approvals_rows:
+            pending_approvals.append({
+                'id': row[0],
+                'tenant_name': row[1],
+                'amount': row[2],
+                'payment_date': row[3].strftime('%d %b %Y'),
+                'remarks': row[4],
+                'room_number': row[5],
+                'created_at': row[6].strftime('%d %b %Y %H:%M')
+            })
+
         cur.close()
         conn.close()
         
         return render_template('owner/finance.html', 
                              tenants=tenants,
                              expenses=expenses,
+                             pending_approvals=pending_approvals,
                              total_income=total_income,
                              total_expenses=total_expenses,
                              net_profit=total_income - total_expenses,
@@ -1437,13 +1521,30 @@ def tenant_dashboard():
         current_month = datetime.now().strftime('%Y-%m')
         
         cur.execute("""
-            SELECT id FROM payments 
-            WHERE tenant_id = %s AND payment_month = %s AND status = 'COMPLETED'
+            SELECT status FROM payments 
+            WHERE tenant_id = %s AND payment_month = %s
+            ORDER BY created_at DESC LIMIT 1
         """, (tenant[0], current_month))
         
-        is_paid = cur.fetchone() is not None
-        rent_status = 'PAID' if is_paid else 'PENDING'
+        payment_record = cur.fetchone()
+        
+        rent_status = 'UNPAID'
+        if payment_record:
+            status_val = payment_record[0]
+            if status_val == 'COMPLETED':
+                rent_status = 'PAID'
+            elif status_val == 'PENDING':
+                rent_status = 'VERIFYING'
             
+        # Fetch Owner Payment Details
+        cur.execute("""
+            SELECT o.upi_id, o.id 
+            FROM owners o 
+            JOIN tenants t ON t.owner_id = o.id 
+            WHERE t.id = %s
+        """, (tenant[0],))
+        owner_details = cur.fetchone()
+        
         tenant_data = {
             'id': tenant[0],
             'full_name': tenant[1],
@@ -1453,7 +1554,9 @@ def tenant_dashboard():
             'email': tenant[5],
             'rent': tenant[6],
             'status': tenant[7],
-            'rent_status': rent_status
+            'rent_status': rent_status,
+            'owner_upi': owner_details[0] if owner_details else None,
+            'owner_id': owner_details[1] if owner_details else None
         }
         
         return render_template('tenant/dashboard.html', tenant=tenant_data)
@@ -1463,6 +1566,48 @@ def tenant_dashboard():
     finally:
         cur.close()
         conn.close()
+
+@bp.route('/tenant/pay', methods=['POST'])
+def tenant_pay_rent():
+    if session.get('role') != 'TENANT': return redirect(url_for('main.login'))
+    
+    amount = request.form.get('amount')
+    txn_id = request.form.get('transaction_id')
+    tenant_id = request.form.get('tenant_id')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        from datetime import datetime
+        current_month = datetime.now().strftime('%Y-%m')
+        
+        # Check if already paid
+        cur.execute("""
+            SELECT id FROM payments 
+            WHERE tenant_id = %s AND payment_month = %s AND status = 'COMPLETED'
+        """, (tenant_id, current_month))
+        if cur.fetchone():
+             flash("Rent for this month is already paid!", "info")
+             return redirect(url_for('main.tenant_dashboard'))
+
+        # Insert Payment Record
+        cur.execute("""
+            INSERT INTO payments (tenant_id, amount, payment_month, status, payment_mode, remarks)
+            VALUES (%s, %s, %s, 'PENDING', 'UPI', %s)
+        """, (tenant_id, amount, current_month, f"Txn Ref: {txn_id}"))
+        
+        conn.commit()
+        flash("Payment submitted for verification!", "success")
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Payment Error: {e}")
+        flash("Failed to submit payment.", "error")
+    finally:
+        cur.close()
+        conn.close()
+        
+    return redirect(url_for('main.tenant_dashboard'))
 
 @bp.route('/tenant/qr/<tenant_id>')
 def tenant_qr_code(tenant_id):
