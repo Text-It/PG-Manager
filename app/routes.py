@@ -1437,13 +1437,30 @@ def tenant_dashboard():
         current_month = datetime.now().strftime('%Y-%m')
         
         cur.execute("""
-            SELECT id FROM payments 
-            WHERE tenant_id = %s AND payment_month = %s AND status = 'COMPLETED'
+            SELECT status FROM payments 
+            WHERE tenant_id = %s AND payment_month = %s
+            ORDER BY created_at DESC LIMIT 1
         """, (tenant[0], current_month))
         
-        is_paid = cur.fetchone() is not None
-        rent_status = 'PAID' if is_paid else 'PENDING'
+        payment_record = cur.fetchone()
+        
+        rent_status = 'UNPAID'
+        if payment_record:
+            status_val = payment_record[0]
+            if status_val == 'COMPLETED':
+                rent_status = 'PAID'
+            elif status_val == 'PENDING':
+                rent_status = 'VERIFYING'
             
+        # Fetch Owner Payment Details
+        cur.execute("""
+            SELECT o.upi_id, o.id 
+            FROM owners o 
+            JOIN tenants t ON t.owner_id = o.id 
+            WHERE t.id = %s
+        """, (tenant[0],))
+        owner_details = cur.fetchone()
+        
         tenant_data = {
             'id': tenant[0],
             'full_name': tenant[1],
@@ -1453,7 +1470,9 @@ def tenant_dashboard():
             'email': tenant[5],
             'rent': tenant[6],
             'status': tenant[7],
-            'rent_status': rent_status
+            'rent_status': rent_status,
+            'owner_upi': owner_details[0] if owner_details else None,
+            'owner_id': owner_details[1] if owner_details else None
         }
         
         return render_template('tenant/dashboard.html', tenant=tenant_data)
@@ -1463,6 +1482,48 @@ def tenant_dashboard():
     finally:
         cur.close()
         conn.close()
+
+@bp.route('/tenant/pay', methods=['POST'])
+def tenant_pay_rent():
+    if session.get('role') != 'TENANT': return redirect(url_for('main.login'))
+    
+    amount = request.form.get('amount')
+    txn_id = request.form.get('transaction_id')
+    tenant_id = request.form.get('tenant_id')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        from datetime import datetime
+        current_month = datetime.now().strftime('%Y-%m')
+        
+        # Check if already paid
+        cur.execute("""
+            SELECT id FROM payments 
+            WHERE tenant_id = %s AND payment_month = %s AND status = 'COMPLETED'
+        """, (tenant_id, current_month))
+        if cur.fetchone():
+             flash("Rent for this month is already paid!", "info")
+             return redirect(url_for('main.tenant_dashboard'))
+
+        # Insert Payment Record
+        cur.execute("""
+            INSERT INTO payments (tenant_id, amount, payment_month, status, payment_mode, remarks)
+            VALUES (%s, %s, %s, 'PENDING', 'UPI', %s)
+        """, (tenant_id, amount, current_month, f"Txn Ref: {txn_id}"))
+        
+        conn.commit()
+        flash("Payment submitted for verification!", "success")
+        
+    except Exception as e:
+        conn.rollback()
+        print(f"Payment Error: {e}")
+        flash("Failed to submit payment.", "error")
+    finally:
+        cur.close()
+        conn.close()
+        
+    return redirect(url_for('main.tenant_dashboard'))
 
 @bp.route('/tenant/qr/<tenant_id>')
 def tenant_qr_code(tenant_id):
