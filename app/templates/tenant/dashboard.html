@@ -11,6 +11,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   
+  <script>
+    // Apply theme immediately to prevent flash
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+  </script>
+
   <style>
     /* Specific Dashboard Overrides */
     .sidebar-link {
@@ -153,6 +162,18 @@
           </div>
           <!-- Top Actions -->
           <div class="flex items-center gap-4">
+              <!-- Dark Mode Toggle -->
+              <button id="theme-toggle" class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-slate-600 shadow-sm hover:text-brand1 transition-colors">
+                  <!-- Moon Icon (for Light Mode) -->
+                  <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                  <!-- Sun Icon (for Dark Mode) -->
+                  <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+              </button>
+
               <!-- Notification Bell -->
               <button class="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-slate-600 shadow-sm hover:text-brand1 transition-colors relative">
                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -266,6 +287,44 @@
     if(sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
     if(sidebarClose) sidebarClose.addEventListener('click', toggleSidebar);
     if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    // Dark Mode Toggle Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+    // Set initial icon state
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        darkIcon.classList.remove('hidden');
+    } else {
+        lightIcon.classList.remove('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+        // Toggle icons
+        darkIcon.classList.toggle('hidden');
+        lightIcon.classList.toggle('hidden');
+
+        // If is set via local storage
+        if (localStorage.getItem('theme')) {
+            if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        } else {
+            // First time toggle
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+    });
   </script>
 </body>
 </html>
