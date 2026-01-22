@@ -32,7 +32,7 @@ Thank you for your interest in contributing! We welcome pull requests from every
     *   `routes.py`: Backend logic and API endpoints.
     *   `templates/`: HTML files (Jinja2).
     *   `static/`: CSS (Tailwind) and JS.
-*   `database_schemas/`: SQL migration files (01 to 06).
+*   `database_schemas/`: SQL migration files (01 to 07).
 *   `tests/`: (Future) Test suite.
 
 ## Code Style

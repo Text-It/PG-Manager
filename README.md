@@ -12,6 +12,10 @@
     *   Record Expenses (Utilities, Maintenance, Salaries).
     *   Real-time **Net Profit** calculation.
 *   **Complaint System**: Tenant-raised issues with priority tracking (High/Medium/Low) and resolution workflow.
+*   **Tenant Portal**:
+    *   **Dashboard**: View rent due, payment history, and lease details.
+    *   **Online Payments**: Pay rent via UPI and submit transaction details for verification.
+    *   **Dark Mode**: Toggle between light and dark themes.
 *   **Properties & Rooms**: Manage multiple buildings and configure room capacity/pricing.
 *   **Responsive Design**: Built with Tailwind CSS for a seamless mobile and desktop experience.
 
