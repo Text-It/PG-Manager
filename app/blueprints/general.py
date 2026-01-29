@@ -238,6 +238,14 @@ def contact_submit():
 
 
 
+@bp.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@bp.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
 def time_ago(date):
     if not date: return ''
     from datetime import datetime, timezone, date as d

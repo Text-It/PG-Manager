@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy - PG-Manager</title>
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/custom.css" />
+</head>
+<body class="bg-gray-50 text-slate-800 font-sans">
+    <!-- Navbar -->
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 glass shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 lg:h-20">
+                <a href="{{ url_for('main.index') }}" class="shrink-0 flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg brand-avatar flex items-center justify-center text-white font-bold text-xl">P</div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">PG-Manager</span>
+                </a>
+                <nav class="hidden lg:flex space-x-8">
+                    <a href="{{ url_for('main.index') }}" class="text-gray-600 hover:text-nav font-medium transition-colors">Home</a>
+                    <a href="{{ url_for('main.contact') }}" class="text-gray-600 hover:text-nav font-medium transition-colors">Contact</a>
+                </nav>
+                 <div class="hidden lg:flex items-center space-x-4">
+                    <a href="{{ url_for('main.login') }}" class="text-gray-600 hover:text-nav font-medium transition-colors">Log in</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="pt-32 pb-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-8">Privacy Policy</h1>
+        
+        <div class="bg-white p-8 sm:p-12 rounded-2xl shadow-sm border border-gray-100 prose prose-slate max-w-none">
+            <p class="text-sm text-slate-500 mb-6">Last updated: January 29, 2026</p>
+
+            <h3>1. Information We Collect</h3>
+            <p>We collect information you provide directly to us, such as when you create an account, subscribe to our newsletter, or fill out a form. This may include your name, email address, and phone number.</p>
+
+            <h3>2. How We Use Information</h3>
+            <p>We use the information we collect to provide, maintain, and improve our services, to communicate with you, and to monitor and analyze trends and usage.</p>
+
+            <h3>3. Data Security</h3>
+            <p>We take reasonable measures to help protect information about you from loss, theft, misuse and unauthorized access, disclosure, alteration and destruction.</p>
+
+            <h3>4. Cookies</h3>
+            <p>We use cookies and similar technologies to collect information about your interactions with our Service.</p>
+            
+            <h3>5. Third-Party Services</h3>
+            <p>We may share your information with third-party vendors, consultants and other service providers who need access to such information to carry out work on our behalf.</p>
+
+            <h3>6. Your Rights</h3>
+            <p>You have the right to access, update, or delete your personal information at any time by logging into your account or contacting us.</p>
+
+            <h3>7. Contact Us</h3>
+            <p>If you have any questions about this Privacy Policy, please <a href="{{ url_for('main.contact') }}" class="text-brand1 hover:underline">contact us</a>.</p>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="bg-white border-t border-gray-100 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-500">© 2026 PG-Manager. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
