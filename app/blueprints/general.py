@@ -74,6 +74,7 @@ def apply_for_job():
         import smtplib
         from email.mime.text import MIMEText
         from email.mime.multipart import MIMEMultipart
+        from email.mime.application import MIMEApplication
 
         smtp_server = os.environ.get('MAIL_SERVER')
         smtp_port = os.environ.get('MAIL_PORT')
@@ -82,64 +83,99 @@ def apply_for_job():
 
         if smtp_server and smtp_user and smtp_password:
             try:
-                # A. Email to Admin
+                # --- A. Email to Admin ---
                 msg_admin = MIMEMultipart()
                 msg_admin['From'] = smtp_user
-                msg_admin['To'] = smtp_user  # Send to self/admin
-                msg_admin['Subject'] = f"New Job Application: {role} - {full_name}"
+                msg_admin['To'] = smtp_user
+                msg_admin['Subject'] = f"🚀 New Application: {role} - {full_name}"
                 
-                body_admin = f"""
-                New Applicant Details:
-                ----------------------
-                Name: {full_name}
-                Email: {email}
-                Phone: {phone}
-                Role: {role}
-                Experience: {experience_years}
-                CTC (Current/Expected): {current_ctc} / {expected_ctc}
-                Notice Period: {notice_period}
-                LinkedIn: {linkedin_url}
-                Portfolio: {portfolio_url}
+                # Admin HTML Template
+                html_admin = f"""
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                    <div style="background-color: #4F46E5; padding: 20px; text-align: center; color: white;">
+                        <h2 style="margin: 0;">New Job Application</h2>
+                    </div>
+                    <div style="padding: 20px; background-color: #f9fafb;">
+                        <p style="font-size: 16px; color: #374151;"><strong>{full_name}</strong> has applied for <strong>{role}</strong>.</p>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 15px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <tr style="border-bottom: 1px solid #eee;"><td style="padding: 12px; font-weight: bold; color: #6b7280;">Email</td><td style="padding: 12px;">{email}</td></tr>
+                            <tr style="border-bottom: 1px solid #eee;"><td style="padding: 12px; font-weight: bold; color: #6b7280;">Phone</td><td style="padding: 12px;">{phone}</td></tr>
+                            <tr style="border-bottom: 1px solid #eee;"><td style="padding: 12px; font-weight: bold; color: #6b7280;">Experience</td><td style="padding: 12px;">{experience_years}</td></tr>
+                            <tr style="border-bottom: 1px solid #eee;"><td style="padding: 12px; font-weight: bold; color: #6b7280;">Current / Expected CTC</td><td style="padding: 12px;">{current_ctc} / {expected_ctc}</td></tr>
+                            <tr style="border-bottom: 1px solid #eee;"><td style="padding: 12px; font-weight: bold; color: #6b7280;">Notice Period</td><td style="padding: 12px;">{notice_period}</td></tr>
+                            <tr style="border-bottom: 1px solid #eee;"><td style="padding: 12px; font-weight: bold; color: #6b7280;">LinkedIn</td><td style="padding: 12px;"><a href="{linkedin_url}">{linkedin_url}</a></td></tr>
+                            <tr><td style="padding: 12px; font-weight: bold; color: #6b7280;">Portfolio</td><td style="padding: 12px;"><a href="{portfolio_url}">{portfolio_url}</a></td></tr>
+                        </table>
 
-                Resume Saved as: {resume_filename}
+                        <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">The resume is attached to this email.</p>
+                    </div>
+                </div>
                 """
-                msg_admin.attach(MIMEText(body_admin, 'plain'))
+                msg_admin.attach(MIMEText(html_admin, 'html'))
+
+                # Attach Resume
+                if resume_data:
+                    part = MIMEApplication(resume_data, Name=resume_filename)
+                    part['Content-Disposition'] = f'attachment; filename="{resume_filename}"'
+                    msg_admin.attach(part)
 
                 server = smtplib.SMTP(smtp_server, int(smtp_port) if smtp_port else 587)
                 server.starttls()
                 server.login(smtp_user, smtp_password)
                 server.send_message(msg_admin)
 
-                # B. Email to Applicant
+                # --- B. Email to Applicant ---
                 msg_user = MIMEMultipart()
                 msg_user['From'] = smtp_user
                 msg_user['To'] = email
                 msg_user['Subject'] = f"Application Received - {role} at PG-Manager"
                 
-                body_user = f"""
-                Hi {full_name},
+                # Applicant HTML Template
+                html_user = f"""
+                <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+                    <!-- Header -->
+                    <div style="background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 3px solid #4F46E5;">
+                        <h1 style="color: #111827; margin: 0; font-size: 24px;">PG-Manager</h1>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div style="padding: 40px 30px; background-color: #f9fafb;">
+                        <h2 style="color: #1F2937; margin-top: 0; font-size: 20px;">Hi {full_name},</h2>
+                        <p style="color: #4B5563; line-height: 1.6; font-size: 16px;">
+                            Thanks for applying for the <strong>{role}</strong> position. We've received your application and are excited to review it!
+                        </p>
+                        
+                        <div style="background-color: #EEF2FF; border-left: 4px solid #4F46E5; padding: 15px; margin: 25px 0; border-radius: 0 4px 4px 0;">
+                            <p style="margin: 0; color: #4338CA; font-weight: 500;">
+                                "We believe co-living is the future, and we're glad you want to build it with us."
+                            </p>
+                        </div>
+                        
+                        <p style="color: #4B5563; line-height: 1.6;">
+                            Our team is currently reviewing your profile. If your skills match our requirements, we will reach out to schedule an interview within the next <strong>3-5 business days</strong>.
+                        </p>
+                    </div>
 
-                Thanks for applying for the {role} position at PG-Manager.
-                We have received your application and our team is currently reviewing it.
-
-                We will get back to you shortly if your profile matches our requirements.
-
-                Best Regards,
-                PG-Manager HR Team
+                    <!-- Footer -->
+                    <div style="background-color: #1F2937; padding: 20px; text-align: center; color: #9CA3AF; font-size: 13px;">
+                        <p style="margin: 0;">&copy; 2026 PG-Manager. All rights reserved.</p>
+                        <p style="margin: 5px 0 0 0;">This is an automated message, please do not reply directly.</p>
+                    </div>
+                </div>
                 """
-                msg_user.attach(MIMEText(body_user, 'plain'))
-                server.send_message(msg_user)
+                msg_user.attach(MIMEText(html_user, 'html'))
                 
+                server.send_message(msg_user)
                 server.quit()
-                print("Emails sent successfully via SMTP.")
+                print("HTML Emails sent successfully.")
 
             except Exception as e:
                 print(f"SMTP Error: {e}")
-                # Don't fail the request if email fails, just log it
         else:
-            print("SMTP credentials not found. Skipping email.")
+            print("SMTP credentials not found.")
 
-        flash('Application submitted successfully! Check your email for confirmation.', 'success')
+        flash('Application submitted! Check your email for confirmation.', 'success')
         return redirect(url_for('main.careers'))
 
     return redirect(url_for('main.careers'))
