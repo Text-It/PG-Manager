@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About Us - PG-Manager</title>
+    <link rel="stylesheet" href="/static/css/tailwind.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/custom.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+    <!-- Navbar (Simplified) -->
+    <header class="fixed top-0 w-full z-50 transition-all duration-300 glass shadow-sm" data-aos="fade-down">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 lg:h-20">
+                <a href="{{ url_for('main.index') }}" class="shrink-0 flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg brand-avatar flex items-center justify-center text-white font-bold text-xl">P</div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">PG-Manager</span>
+                </a>
+                <nav class="hidden lg:flex space-x-8">
+                    <a href="{{ url_for('main.index') }}" class="text-gray-600 hover:text-nav font-medium transition-colors">Home</a>
+                    <a href="#" class="text-brand1 font-medium transition-colors">About Us</a>
+                    <a href="{{ url_for('main.login') }}" class="text-gray-600 hover:text-nav font-medium transition-colors">Login</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 lg:pt-48 lg:pb-32 relative overflow-hidden bg-white">
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-brand1/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-nav-900/5 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-900" data-aos="fade-up">
+                Revolutionizing <span class="text-brand1">Co-Living</span>
+            </h1>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed" data-aos="fade-up" data-aos-delay="200">
+                We believe that finding a home and managing property should be seamless, digital, and stress-free. PG-Manager is built to bridge the gap between modern owners and digital-native tenants.
+            </p>
+        </div>
+    </section>
+
+    <!-- Our Mission -->
+    <section class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div data-aos="fade-right">
+                     <div class="relative group">
+                        <div class="absolute inset-0 bg-brand2/10 rounded-3xl transform -rotate-3 transition-transform duration-300 group-hover:-rotate-6"></div>
+                        <div class="relative bg-white border border-gray-100 p-2 rounded-3xl shadow-xl overflow-hidden aspect-video flex items-center justify-center">
+                            <!-- Abstract Illustration -->
+                           <svg class="w-full h-full p-8" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <circle cx="200" cy="150" r="100" fill="#FEB139" fill-opacity="0.1"/>
+                              <path d="M150 150L200 100L250 150H150Z" fill="#293462" fill-opacity="0.8"/>
+                              <rect x="170" y="150" width="60" height="80" fill="#293462" fill-opacity="0.8"/>
+                              <circle cx="280" cy="100" r="20" fill="#D61C4E" fill-opacity="0.2"/>
+                           </svg>
+                        </div>
+                      </div>
+                </div>
+                <div data-aos="fade-left">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-6">Our Mission</h2>
+                    <p class="text-lg text-slate-600 mb-6 leading-relaxed">
+                        To empower PG owners with world-class tools that automate mundane tasks, while providing tenants with a safe, transparent, and modern living experience.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-brand1 shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span class="ml-4 text-slate-700 font-medium text-lg">Transparency in Payments</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-brand1 shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span class="ml-4 text-slate-700 font-medium text-lg">Instant Communication</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-brand1 shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span class="ml-4 text-slate-700 font-medium text-lg">Community Building</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="py-20 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center" data-aos="fade-up">
+                <div>
+                    <div class="text-4xl md:text-5xl font-extrabold text-brand1 mb-2">10k+</div>
+                    <div class="text-slate-400 font-medium">Happy Tenants</div>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-extrabold text-brand2 mb-2">500+</div>
+                    <div class="text-slate-400 font-medium">PG Owners</div>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-extrabold text-green-500 mb-2">25+</div>
+                    <div class="text-slate-400 font-medium">Cities</div>
+                </div>
+                <div>
+                    <div class="text-4xl md:text-5xl font-extrabold text-blue-500 mb-2">₹10Cr</div>
+                    <div class="text-slate-400 font-medium">Rent Processed</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+             <div class="flex justify-center flex-wrap gap-8 mb-8">
+                <a href="{{ url_for('main.index') }}" class="text-slate-500 hover:text-brand1 transition-colors">Home</a>
+                <a href="{{ url_for('main.about') }}" class="text-slate-500 hover:text-brand1 transition-colors">About</a>
+                <a href="{{ url_for('main.team') }}" class="text-slate-500 hover:text-brand1 transition-colors">Team</a>
+                <a href="{{ url_for('main.careers') }}" class="text-slate-500 hover:text-brand1 transition-colors">Careers</a>
+                <a href="{{ url_for('main.contact') }}" class="text-slate-500 hover:text-brand1 transition-colors">Contact</a>
+             </div>
+            <p class="text-slate-500">© 2026 PG-Manager. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 50
+      });
+    </script>
+</body>
+</html>

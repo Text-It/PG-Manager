@@ -12,6 +12,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/css/custom.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   </head>
   <body
     class="bg-gray-50 text-gray-900 overflow-x-hidden"
@@ -66,6 +67,11 @@
               class="text-gray-600 hover:text-nav font-medium transition-colors"
               >About</a
             >
+            <a
+              href="{{ url_for('main.contact') }}"
+              class="text-gray-600 hover:text-nav font-medium transition-colors"
+              >Contact</a
+            >
           </nav>
 
           <div class="hidden lg:flex items-center space-x-4">
@@ -109,20 +115,39 @@
       class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-8 max-w-lg mx-auto space-y-2">
+              {% for category, message in messages %}
+                <div class="p-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 shadow-lg animate-fade-in
+                    {% if category == 'error' %} bg-red-50 text-red-600 border border-red-100
+                    {% else %} bg-green-50 text-green-600 border border-green-100 {% endif %}">
+                  {% if category == 'error' %}
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {% else %}
+                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                  {% endif %}
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
         <h1
           class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6"
         >
-          <span class="block text-gray-900">Smart PG Management</span>
-          <span class="block text-gradient mt-2">Made Simple</span>
+          <span class="block text-gray-900" data-aos="fade-up">Smart PG Management</span>
+          <span class="block text-gradient mt-2" data-aos="fade-up" data-aos-delay="200">Made Simple</span>
         </h1>
 
         <div class="h-8 mb-8 text-xl md:text-2xl text-gray-600 font-medium">
           <span id="typing-text"></span><span class="animate-pulse">|</span>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10" data-aos="fade-up" data-aos-delay="400">
           <a
-            href="#"
+            href="{{ url_for('main.signup') }}"
             class="btn-primary px-8 py-4 rounded-full font-semibold text-lg hover:opacity-95 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
           >
             <span class="relative z-10">Get Started as Owner</span>
@@ -131,7 +156,7 @@
             ></div>
           </a>
           <a
-            href="#"
+            href="{{ url_for('main.login') }}"
             class="btn-outline px-8 py-4 rounded-full font-semibold text-lg hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
           >
             Find a PG
@@ -154,7 +179,7 @@
 
         <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           <!-- Owners Features -->
-          <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-8 flex flex-col h-full hover:shadow-md transition-shadow duration-300">
+          <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-8 flex flex-col h-full hover:shadow-md transition-shadow duration-300" data-aos="fade-right">
             <div class="w-12 h-12 badge-nav rounded-xl flex items-center justify-center text-nav mb-6">
               <svg
                 class="w-6 h-6"
@@ -204,7 +229,7 @@
             </ul>
 
             <div class="mt-auto">
-              <button type="button" class="flex items-center flex-wrap justify-between gap-2 border border-blue-100 cursor-pointer text-[15px] font-medium rounded-3xl pl-5 pr-3 h-14 w-full hover:bg-blue-50 transition-all duration-300 text-slate-800">
+              <a href="{{ url_for('main.signup') }}" class="flex items-center flex-wrap justify-between gap-2 border border-blue-100 cursor-pointer text-[15px] font-medium rounded-3xl pl-5 pr-3 h-14 w-full hover:bg-blue-50 transition-all duration-300 text-slate-800">
                 Get Started
                 <div class="w-11 h-11 rounded-full bg-blue-100 flex justify-center items-center">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -216,7 +241,7 @@
                     </g>
                   </svg>
                 </div>
-              </button>
+              </a>
             </div>
           </div>
 
@@ -271,7 +296,7 @@
             </ul>
 
             <div class="mt-auto">
-              <button type="button" class="flex items-center flex-wrap justify-between gap-2 border border-pink-100 cursor-pointer text-[15px] font-medium rounded-3xl pl-5 pr-3 h-14 w-full hover:bg-pink-50 transition-all duration-300 text-slate-800">
+              <a href="{{ url_for('main.login') }}" class="flex items-center flex-wrap justify-between gap-2 border border-pink-100 cursor-pointer text-[15px] font-medium rounded-3xl pl-5 pr-3 h-14 w-full hover:bg-pink-50 transition-all duration-300 text-slate-800">
                 Explore
                 <div class="w-11 h-11 rounded-full bg-pink-100 flex justify-center items-center">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -283,7 +308,7 @@
                     </g>
                   </svg>
                 </div>
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -592,7 +617,7 @@
     </script>
 
     <!-- Why Choose Us -->
-    <section class="py-24 bg-white">
+    <section id="about" class="py-24 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-16 max-w-3xl">
           <h2 class="text-4xl font-bold text-slate-900 mb-6">
@@ -605,7 +630,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Card 1: Super Fast (Span 2) -->
-            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group">
+            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="100">
                 <div class="relative z-10">
                     <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-8 text-brand2">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -617,7 +642,7 @@
             </div>
 
             <!-- Card 2: Secure (Span 1) -->
-            <div class="bg-slate-50 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group">
+            <div class="bg-slate-50 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="200">
                  <div class="relative z-10">
                     <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-8 text-nav-900">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -629,7 +654,7 @@
             </div>
 
             <!-- Card 3: Easy to Use (Span 1) -->
-             <div class="bg-slate-900 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-800 relative overflow-hidden group text-white">
+             <div class="bg-slate-900 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-800 relative overflow-hidden group text-white" data-aos="zoom-in" data-aos-delay="300">
                  <div class="relative z-10">
                     <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm mb-8 text-white">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -641,7 +666,7 @@
             </div>
 
             <!-- Card 4: Real-time (Span 2) -->
-            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group">
+            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="400">
                  <div class="relative z-10">
                     <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-8 text-green-500">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -661,7 +686,7 @@
       <div
         class="absolute inset-0 bg-cta-gradient opacity-95 -z-10"
       ></div>
-      <div class="max-w-4xl mx-auto px-4 text-center">
+      <div class="max-w-4xl mx-auto px-4 text-center" data-aos="fade-up">
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">
           Ready to streamline your PG business?
         </h2>
@@ -669,7 +694,7 @@
           Join hundreds of owners who manage their properties effortlessly.
         </p>
         <a
-          href="#"
+          href="{{ url_for('main.signup') }}"
           class="inline-block px-10 py-5 btn-primary font-bold rounded-full hover:opacity-95 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
           >Get Started Now</a
         >
@@ -687,23 +712,18 @@
               <h4 class="font-bold mb-4 text-white">Company</h4>
               <ul class="space-y-2 text-sm text-gray-400">
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
+                  <a href="{{ url_for('main.about') }}" class="hover:text-brand1 transition-colors"
                     >About Us</a
                   >
                 </li>
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
+                  <a href="{{ url_for('main.careers') }}" class="hover:text-brand1 transition-colors"
                     >Careers</a
                   >
-                </li>
+
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
-                    >Premium Tools</a
-                  >
-                </li>
-                <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
-                    >Blogs</a
+                  <a href="{{ url_for('main.team') }}" class="hover:text-brand1 transition-colors"
+                    >Team</a
                   >
                 </li>
               </ul>
@@ -727,13 +747,8 @@
                   >
                 </li>
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
+                  <a href="{{ url_for('main.signup') }}" class="hover:text-brand1 transition-colors"
                     >Add List</a
-                  >
-                </li>
-                <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
-                    >Contact</a
                   >
                 </li>
               </ul>
@@ -743,23 +758,18 @@
               <h4 class="font-bold mb-4 text-white">Legal</h4>
               <ul class="space-y-2 text-sm text-gray-400">
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
+                  <a href="{{ url_for('main.terms') }}" class="hover:text-brand1 transition-colors"
                     >Terms</a
                   >
                 </li>
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
+                  <a href="{{ url_for('main.privacy') }}" class="hover:text-brand1 transition-colors"
                     >Privacy</a
                   >
                 </li>
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
-                    >Teams</a
-                  >
-                </li>
-                <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
-                    >About Us</a
+                  <a href="{{ url_for('main.contact') }}" class="hover:text-brand1 transition-colors"
+                    >Contact</a
                   >
                 </li>
               </ul>
@@ -774,38 +784,39 @@
               informed about fresh sales.
             </p>
             <div class="flex flex-col gap-4">
-              <div class="relative">
+              <form action="{{ url_for('main.subscribe') }}" method="POST" class="relative">
                 <label for="email-subscribe" class="sr-only">Your Email</label>
                 <div class="flex gap-2">
                   <input
                     type="email"
+                    name="email"
                     id="email-subscribe"
+                    required
                     placeholder="someone@example.com"
                     class="w-full bg-gray-800/50 border border-gray-700 text-white text-sm rounded-lg focus:ring-brand1 focus:border-brand1 block p-2.5 placeholder-gray-500 outline-none transition-all focus:bg-gray-800"
                   />
                   <button
+                    type="submit"
                     class="btn-primary px-5 py-2.5 rounded-lg font-medium text-sm hover:opacity-95 whitespace-nowrap shadow-lg hover:shadow-brand1/20 transition-all duration-300"
                   >
                     Subscribe
                   </button>
                 </div>
-              </div>
-              <div class="flex items-start gap-2">
-                <div class="flex items-center h-5">
+                <div class="flex items-center mt-3">
                   <input
-                    id="terms"
+                    id="terms-newsletter"
                     type="checkbox"
-                    value=""
+                    required
                     class="w-4 h-4 border border-gray-600 rounded bg-gray-700 focus:ring-3 focus:ring-brand1 ring-offset-gray-800 cursor-pointer accent-[#D61C4E]"
                   />
+                  <label for="terms-newsletter" class="ml-2 text-xs text-gray-400 font-medium select-none cursor-pointer">
+                    I agree with the
+                    <a href="{{ url_for('main.terms') }}" class="text-brand1 hover:underline"
+                      >terms and conditions</a
+                    >
+                  </label>
                 </div>
-                <label for="terms" class="text-xs text-gray-400 font-medium select-none cursor-pointer">
-                  I agree with the
-                  <a href="#" class="text-brand1 hover:underline"
-                    >terms and conditions</a
-                  >
-                </label>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -858,6 +869,14 @@
           setTimeout(type, 100);
         }
       })();
+    </script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+      });
     </script>
   </body>
 </html>
