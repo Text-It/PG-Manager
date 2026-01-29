@@ -12,6 +12,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/css/custom.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   </head>
   <body
     class="bg-gray-50 text-gray-900 overflow-x-hidden"
@@ -112,15 +113,15 @@
         <h1
           class="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6"
         >
-          <span class="block text-gray-900">Smart PG Management</span>
-          <span class="block text-gradient mt-2">Made Simple</span>
+          <span class="block text-gray-900" data-aos="fade-up">Smart PG Management</span>
+          <span class="block text-gradient mt-2" data-aos="fade-up" data-aos-delay="200">Made Simple</span>
         </h1>
 
         <div class="h-8 mb-8 text-xl md:text-2xl text-gray-600 font-medium">
           <span id="typing-text"></span><span class="animate-pulse">|</span>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10" data-aos="fade-up" data-aos-delay="400">
           <a
             href="{{ url_for('main.signup') }}"
             class="btn-primary px-8 py-4 rounded-full font-semibold text-lg hover:opacity-95 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden group"
@@ -154,7 +155,7 @@
 
         <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           <!-- Owners Features -->
-          <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-8 flex flex-col h-full hover:shadow-md transition-shadow duration-300">
+          <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-8 flex flex-col h-full hover:shadow-md transition-shadow duration-300" data-aos="fade-right">
             <div class="w-12 h-12 badge-nav rounded-xl flex items-center justify-center text-nav mb-6">
               <svg
                 class="w-6 h-6"
@@ -605,7 +606,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Card 1: Super Fast (Span 2) -->
-            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group">
+            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="100">
                 <div class="relative z-10">
                     <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-8 text-brand2">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -617,7 +618,7 @@
             </div>
 
             <!-- Card 2: Secure (Span 1) -->
-            <div class="bg-slate-50 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group">
+            <div class="bg-slate-50 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="200">
                  <div class="relative z-10">
                     <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-8 text-nav-900">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -629,7 +630,7 @@
             </div>
 
             <!-- Card 3: Easy to Use (Span 1) -->
-             <div class="bg-slate-900 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-800 relative overflow-hidden group text-white">
+             <div class="bg-slate-900 rounded-[2.5rem] p-8 transition-all duration-300 hover:shadow-xl border border-slate-800 relative overflow-hidden group text-white" data-aos="zoom-in" data-aos-delay="300">
                  <div class="relative z-10">
                     <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm mb-8 text-white">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -641,7 +642,7 @@
             </div>
 
             <!-- Card 4: Real-time (Span 2) -->
-            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group">
+            <div class="md:col-span-2 bg-slate-50 rounded-[2.5rem] p-8 md:p-12 transition-all duration-300 hover:shadow-xl border border-slate-100 relative overflow-hidden group" data-aos="zoom-in" data-aos-delay="400">
                  <div class="relative z-10">
                     <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm mb-8 text-green-500">
                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -661,7 +662,7 @@
       <div
         class="absolute inset-0 bg-cta-gradient opacity-95 -z-10"
       ></div>
-      <div class="max-w-4xl mx-auto px-4 text-center">
+      <div class="max-w-4xl mx-auto px-4 text-center" data-aos="fade-up">
         <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">
           Ready to streamline your PG business?
         </h2>
@@ -692,7 +693,7 @@
                   >
                 </li>
                 <li>
-                  <a href="#" class="hover:text-brand1 transition-colors"
+                  <a href="{{ url_for('main.careers') }}" class="hover:text-brand1 transition-colors"
                     >Careers</a
                   >
                 </li>
@@ -858,6 +859,14 @@
           setTimeout(type, 100);
         }
       })();
+    </script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+      });
     </script>
   </body>
 </html>
