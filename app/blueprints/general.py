@@ -246,6 +246,10 @@ def terms():
 def privacy():
     return render_template('privacy.html')
 
+@bp.route('/team')
+def team():
+    return render_template('team.html')
+
 def time_ago(date):
     if not date: return ''
     from datetime import datetime, timezone, date as d

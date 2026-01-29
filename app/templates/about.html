@@ -114,6 +114,13 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-100 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+             <div class="flex justify-center flex-wrap gap-8 mb-8">
+                <a href="{{ url_for('main.index') }}" class="text-slate-500 hover:text-brand1 transition-colors">Home</a>
+                <a href="{{ url_for('main.about') }}" class="text-slate-500 hover:text-brand1 transition-colors">About</a>
+                <a href="{{ url_for('main.team') }}" class="text-slate-500 hover:text-brand1 transition-colors">Team</a>
+                <a href="{{ url_for('main.careers') }}" class="text-slate-500 hover:text-brand1 transition-colors">Careers</a>
+                <a href="{{ url_for('main.contact') }}" class="text-slate-500 hover:text-brand1 transition-colors">Contact</a>
+             </div>
             <p class="text-slate-500">© 2026 PG-Manager. All rights reserved.</p>
         </div>
     </footer>
