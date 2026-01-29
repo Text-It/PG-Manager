@@ -179,6 +179,65 @@ def apply_for_job():
         return redirect(url_for('main.careers'))
 
     return redirect(url_for('main.careers'))
+@bp.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+@bp.route('/contact/submit', methods=['POST'])
+def contact_submit():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        subject = request.form['subject']
+        message = request.form['message']
+        
+        # Send Email to Admin
+        smtp_server = os.environ.get('MAIL_SERVER')
+        smtp_port = os.environ.get('MAIL_PORT')
+        smtp_user = os.environ.get('MAIL_USERNAME')
+        smtp_password = os.environ.get('MAIL_PASSWORD')
+
+        if smtp_server and smtp_user and smtp_password:
+            try:
+                import smtplib
+                from email.mime.text import MIMEText
+                from email.mime.multipart import MIMEMultipart
+                
+                msg = MIMEMultipart()
+                msg['From'] = smtp_user
+                msg['To'] = smtp_user  # Admin receives it
+                msg['Subject'] = f"📩 New Inquiry: {subject}"
+                
+                body = f"""
+                New Contact Message
+                -------------------
+                Name: {name}
+                Email: {email}
+                Subject: {subject}
+                
+                Message:
+                {message}
+                """
+                msg.attach(MIMEText(body, 'plain'))
+                
+                server = smtplib.SMTP(smtp_server, int(smtp_port) if smtp_port else 587)
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+                server.quit()
+                
+            except Exception as e:
+                print(f"Contact Email Error: {e}")
+                flash('Something went wrong. Please try again.', 'error')
+                return redirect(url_for('main.contact'))
+        
+        flash('Message sent successfully! We will get back to you soon.', 'success')
+        return redirect(url_for('main.contact'))
+        
+    return redirect(url_for('main.contact'))
+
+
+
 def time_ago(date):
     if not date: return ''
     from datetime import datetime, timezone, date as d
