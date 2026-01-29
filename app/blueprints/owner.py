@@ -60,6 +60,8 @@ def owner_dashboard():
         
         owner_id = owner_row[0]
         
+        owner_id = owner_row[0]
+        
         cur.execute("SELECT SUM(monthly_rent) FROM tenants WHERE owner_id = %s AND onboarding_status = 'ACTIVE'", (owner_id,))
         total_income = cur.fetchone()[0] or 0
         
@@ -241,6 +243,7 @@ def owner_dashboard():
                              
     except Exception as e:
         print(f"Dashboard Error: {e}")
+        flash(f"DASHBOARD CRASH: {str(e)}", "error")
         return render_template('owner/dashboard.html', 
                              name=session.get('name', 'Owner'),
                              total_income=0,
