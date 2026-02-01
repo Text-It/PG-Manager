@@ -8,24 +8,77 @@ from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, session, flash, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.database.database import get_db_connection
+from email.mime.multipart import MIMEMultipart
 from . import bp
 
 def send_otp_email(to_email, otp):
-    """Sends OTP via SMTP or prints to console if not configured"""
+    """Sends OTP via SMTP with a premium HTML template"""
     user = current_app.config.get('MAIL_USERNAME')
     pwd = current_app.config.get('MAIL_PASSWORD')
     
-    msg_body = f"Your PG-Manager Verification Code is: {otp}\n\nThis code expires in 10 minutes."
+    # Premium HTML Template
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <body style="margin:0; padding:0; background-color:#F8FAFC; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; margin-top: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+            
+            <!-- Header -->
+            <div style="background-color: #1E293B; padding: 24px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">PG Manager</h1>
+            </div>
+            
+            <!-- Content -->
+            <div style="padding: 40px 32px; text-align: center;">
+                <h2 style="color: #0F172A; font-size: 20px; font-weight: 600; margin: 0 0 16px;">Verify your email address</h2>
+                <p style="color: #64748B; font-size: 16px; line-height: 24px; margin: 0 0 32px;">
+                    Use the code below to verify your email and complete your registration.
+                </p>
+                
+                <!-- OTP Box -->
+                <div style="background-color: #F1F5F9; border-radius: 12px; padding: 24px; margin: 0 auto; width: fit-content; border: 1px solid #E2E8F0;">
+                    <span style="font-family: monospace; color: #0F172A; font-size: 32px; font-weight: 700; letter-spacing: 8px; display: block;">{otp}</span>
+                </div>
+                
+                <p style="color: #94A3B8; font-size: 14px; margin-top: 32px;">
+                    This code will expire in <strong>10 minutes</strong>.<br>
+                    If you didn't request this, please ignore this email.
+                </p>
+            </div>
+            
+            <!-- Footer -->
+            <div style="background-color: #F8FAFC; padding: 24px; text-align: center; border-top: 1px solid #E2E8F0;">
+                <p style="color: #94A3B8; font-size: 12px; margin: 0;">
+                    &copy; {datetime.now().year} PG Manager. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
     
+    text_content = f"Your PG-Manager Verification Code is: {otp}\n\nThis code expires in 10 minutes."
+    
+    # Mock Mode
     if not user or not pwd:
-        print(f"\n[MOCK EMAIL] To: {to_email} | Subject: Verification OTP | Body: {msg_body}\n")
+        print(f"\n{'='*50}")
+        print(f"[MOCK EMAIL] To: {to_email}")
+        print(f"Subject: PG-Manager Verification Code")
+        print(f"OTP: {otp}")
+        print(f"{'='*50}\n")
         return True
 
     try:
-        msg = MIMEText(msg_body)
-        msg['Subject'] = "PG-Manager Verification Code"
+        msg = MIMEMultipart("alternative")
+        msg['Subject'] = "Your Verification Code - PG Manager"
         msg['From'] = user
         msg['To'] = to_email
+
+        # Attach parts
+        part1 = MIMEText(text_content, "plain")
+        part2 = MIMEText(html_content, "html")
+        msg.attach(part1)
+        msg.attach(part2)
 
         with smtplib.SMTP(current_app.config['MAIL_SERVER'], current_app.config['MAIL_PORT']) as server:
             server.starttls()
