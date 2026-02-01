@@ -5,3 +5,4 @@ Flask-Mail
 qrcode[pil]
 requests
 gunicorn
+aws-wsgi
