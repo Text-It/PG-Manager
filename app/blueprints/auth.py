@@ -330,3 +330,165 @@ def signup():
 def logout():
     session.clear()
     return redirect(url_for('main.login'))
+
+def send_reset_email(to_email, link):
+    """Sends Password Reset Link via SMTP with a premium HTML template"""
+    user = current_app.config.get('MAIL_USERNAME')
+    pwd = current_app.config.get('MAIL_PASSWORD')
+    
+    # Premium HTML Template
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <body style="margin:0; padding:0; background-color:#F8FAFC; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; margin-top: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+            
+            <div style="background-color: #1E293B; padding: 24px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">PG Manager</h1>
+            </div>
+            
+            <div style="padding: 40px 32px; text-align: center;">
+                <h2 style="color: #0F172A; font-size: 20px; font-weight: 600; margin: 0 0 16px;">Reset your password</h2>
+                <p style="color: #64748B; font-size: 16px; line-height: 24px; margin: 0 0 32px;">
+                    We received a request to reset your password. Click the button below to choose a new one.
+                </p>
+                
+                <a href="{link}" style="background-color: #2563EB; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; font-size: 16px;">Reset Password</a>
+                
+                <p style="color: #94A3B8; font-size: 14px; margin-top: 32px;">
+                    This link will expire in <strong>30 minutes</strong>.<br>
+                    If you didn't ask for this, you can safely ignore this email.
+                </p>
+            </div>
+            
+             <div style="background-color: #F8FAFC; padding: 24px; text-align: center; border-top: 1px solid #E2E8F0;">
+                <p style="color: #94A3B8; font-size: 12px; margin: 0;">
+                    &copy; {datetime.now().year} PG Manager. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    text_content = f"Reset your password here: {link}\n\nThis link expires in 30 minutes."
+    
+    if not user or not pwd:
+        print(f"\n{'='*50}")
+        print(f"[MOCK EMAIL] To: {to_email}")
+        print(f"Subject: Reset Password")
+        print(f"Link: {link}")
+        print(f"{'='*50}\n")
+        return True
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg['Subject'] = "Reset Your Password - PG Manager"
+        msg['From'] = user
+        msg['To'] = to_email
+
+        part1 = MIMEText(text_content, "plain")
+        part2 = MIMEText(html_content, "html")
+        msg.attach(part1)
+        msg.attach(part2)
+
+        with smtplib.SMTP(current_app.config['MAIL_SERVER'], current_app.config['MAIL_PORT']) as server:
+            server.starttls()
+            server.login(user, pwd)
+            server.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False
+
+@bp.route('/auth/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+            if not cur.fetchone():
+                # Don't reveal if user exists or not for security, but for UX we usually say "If account exists..."
+                # Here we will just say it sent.
+                flash("If an account exists with that email, we have sent a reset link.", "success")
+                return redirect(url_for('main.login'))
+            
+            token = secrets.token_urlsafe(32)
+            expires = datetime.now() + timedelta(minutes=30)
+            
+            cur.execute("""
+                INSERT INTO password_resets (email, token, expires_at) 
+                VALUES (%s, %s, %s)
+                ON CONFLICT (email) DO UPDATE 
+                SET token = EXCLUDED.token, expires_at = EXCLUDED.expires_at
+            """, (email, token, expires))
+            conn.commit()
+            
+            link = url_for('main.reset_password', token=token, _external=True)
+            send_reset_email(email, link)
+            
+            flash("Reset link sent! Please check your email inbox.", "success")
+            return redirect(url_for('main.login'))
+            
+        except Exception as e:
+            print(e)
+            flash("Error sending reset link.", "error")
+        finally:
+            cur.close()
+            conn.close()
+            
+    return render_template('forgot_password.html')
+
+@bp.route('/auth/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Verify Token
+    cur.execute("SELECT email, expires_at FROM password_resets WHERE token = %s", (token,))
+    record = cur.fetchone()
+    
+    conn.close() # Close strictly to avoid holding connection during render
+    
+    if not record:
+        flash("Invalid or expired reset link.", "error")
+        return redirect(url_for('main.login'))
+        
+    email, expires_at = record
+    if datetime.now() > expires_at:
+        flash("Link has expired. Please request a new one.", "error")
+        return redirect(url_for('main.forgot_password'))
+        
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm = request.form.get('confirm_password')
+        
+        if password != confirm:
+            flash("Passwords do not match.", "error")
+            return render_template('reset_password.html', token=token)
+            
+        hashed = generate_password_hash(password)
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            # Update Password
+            cur.execute("UPDATE users SET password_hash = %s WHERE email = %s", (hashed, email))
+            # Delete Token
+            cur.execute("DELETE FROM password_resets WHERE email = %s", (email,))
+            conn.commit()
+            
+            flash("Password updated successfully! You can now login.", "success")
+            return redirect(url_for('main.login'))
+        except Exception as e:
+            conn.rollback()
+            print(e)
+            flash("Error updating password.", "error")
+        finally:
+            cur.close()
+            conn.close()
+            
+    return render_template('reset_password.html', token=token)
