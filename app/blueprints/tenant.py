@@ -205,8 +205,8 @@ def tenant_qr_code(tenant_id):
     
     return send_file(buf, mimetype='image/png')
 
-@bp.route('/tenant/profile')
-def tenant_profile():
+@bp.route('/tenant/settings')
+def tenant_settings():
     if session.get('role') != 'TENANT': return redirect(url_for('main.login'))
     
     user_id = session.get('user_id')
@@ -233,17 +233,17 @@ def tenant_profile():
             'move_in': tenant[5]
         }
             
-        return render_template('tenant/profile.html', profile=profile, session=session)
+        return render_template('tenant/settings.html', profile=profile, session=session)
         
     except Exception as e:
-        print(f"Error fetching profile: {e}")
+        print(f"Error fetching settings: {e}")
         return redirect(url_for('main.tenant_dashboard'))
     finally:
         cur.close()
         conn.close()
 
-@bp.route('/tenant/profile/update', methods=['POST'])
-def tenant_update_profile():
+@bp.route('/tenant/settings/update', methods=['POST'])
+def tenant_update_settings():
     if session.get('role') != 'TENANT': return redirect(url_for('main.login'))
     
     phone = request.form.get('phone')
@@ -258,20 +258,25 @@ def tenant_update_profile():
         if password:
             hashed_pw = generate_password_hash(password)
             cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (hashed_pw, user_id))
-            flash("Profile and password updated!", "success")
+            flash("Settings updated successfully!", "success")
         else:
-            flash("Profile updated successfully!", "success")
+            flash("Profile settings updated!", "success")
             
         conn.commit()
     except Exception as e:
         conn.rollback()
-        print(f"Error updating profile: {e}")
-        flash("Failed to update profile", "error")
+        print(f"Error updating settings: {e}")
+        flash("Failed to update settings", "error")
     finally:
         cur.close()
         conn.close()
         
-    return redirect(url_for('main.tenant_profile'))
+    return redirect(url_for('main.tenant_settings'))
+
+# Keeping profile route for backward compatibility but redirecting or reusing logic is better
+@bp.route('/tenant/profile')
+def tenant_profile():
+    return redirect(url_for('main.tenant_settings'))
 
 @bp.route('/tenant/payments')
 def tenant_payments():
