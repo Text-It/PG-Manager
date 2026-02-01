@@ -455,6 +455,7 @@ def owner_tenants():
         flash("Could not load tenants", "error")
         return render_template('owner/tenants.html', 
                              tenants=[],
+                             pagination={'current_page': 1, 'total_pages': 1, 'has_next': False, 'has_prev': False, 'total_count': 0, 'per_page': 10},
                              stats={'total': 0, 'active': 0, 'rent_due': 0, 'notice': 0})
     finally:
         cur.close()
@@ -847,8 +848,9 @@ def owner_qr_image(owner_id):
         conn.close()
 
 @bp.route('/owner/tenants/update-status', methods=['POST'])
+@login_required
+@role_required('OWNER')
 def update_tenant_status():
-    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     
     tenant_id = request.form.get('tenant_id')
     new_status = request.form.get('status')
@@ -874,13 +876,16 @@ def update_tenant_status():
     return redirect(url_for('main.owner_tenants'))
 
 @bp.route('/owner/tenants/<int:tenant_id>')
+@login_required
+@role_required('OWNER')
 def owner_tenant_details(tenant_id):
-    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
+    # if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     return render_template('owner/tenant_details.html', tenant_id=tenant_id)
 
 @bp.route('/owner/properties')
+@login_required
+@role_required('OWNER')
 def owner_properties():
-    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     
     conn = get_db_connection()
     if not conn:
@@ -943,8 +948,9 @@ def owner_properties():
         conn.close()
 
 @bp.route('/owner/properties/add-room', methods=['POST'])
+@login_required
+@role_required('OWNER')
 def add_room():
-    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     
     room_number = request.form.get('room_number')
     floor = request.form.get('floor')
@@ -988,8 +994,9 @@ def add_room():
 
 
 @bp.route('/owner/properties/edit-room', methods=['POST'])
+@login_required
+@role_required('OWNER')
 def edit_room():
-    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     
     room_id = request.form.get('room_id')
     room_number = request.form.get('room_number')
