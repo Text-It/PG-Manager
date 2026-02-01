@@ -1,6 +1,6 @@
 [build]
   command = "npm run build:css"
-  functions = "netlify/functions"
+  functions = "functions"
   publish = "app/static"
 
 [functions]
