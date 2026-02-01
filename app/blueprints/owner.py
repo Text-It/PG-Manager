@@ -1034,8 +1034,9 @@ def edit_room():
     return redirect(url_for('main.owner_properties'))
 
 @bp.route('/owner/finance')
+@login_required
+@role_required('OWNER')
 def owner_finance():
-    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -1134,11 +1135,16 @@ def owner_finance():
                              
     except Exception as e:
         print(f"Error fetching finance data: {e}")
-        return render_template('owner/finance.html', tenants=[], expenses=[], current_month_name=current_month_name)
+        return render_template('owner/finance.html', 
+                             tenants=[], expenses=[], pending_approvals=[],
+                             total_income=0, total_expenses=0, net_profit=0,
+                             current_month_name=current_month_name,
+                             current_date=current_date.strftime('%Y-%m-%d'))
 
 @bp.route('/owner/record-payment', methods=['POST'])
+@login_required
+@role_required('OWNER')
 def owner_record_payment():
-    if session.get('role') != 'OWNER': return redirect(url_for('main.login'))
     
     tenant_id = request.form.get('tenant_id')
     amount = request.form.get('amount')
