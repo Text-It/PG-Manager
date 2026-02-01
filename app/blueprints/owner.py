@@ -64,27 +64,76 @@ def owner_dashboard():
         
         owner_id = owner_row[0]
         
-        cur.execute("SELECT SUM(monthly_rent) FROM tenants WHERE owner_id = %s AND onboarding_status = 'ACTIVE'", (owner_id,))
-        total_income = cur.fetchone()[0] or 0
+        current_month = datetime.now().strftime('%Y-%m')
         
+        # --- CONSOLIDATED FAST QUERY ---
+        # We fetch all scalar stats in ONE round-trip to minimize latency.
+        # This replaces 8 separate queries.
         cur.execute("""
-            SELECT SUM(amount) FROM expenses 
-            WHERE owner_id = %s AND expense_month = %s
-        """, (owner_id, datetime.now().strftime('%Y-%m')))
-        total_spent = cur.fetchone()[0] or 0
+            WITH 
+            tenant_stats AS (
+                SELECT 
+                    COUNT(*) FILTER (WHERE onboarding_status = 'ACTIVE') as active_count,
+                    COALESCE(SUM(monthly_rent) FILTER (WHERE onboarding_status = 'ACTIVE'), 0) as expected_rent,
+                    COUNT(*) FILTER (WHERE onboarding_status IN ('ACTIVE', 'PENDING', 'NOTICE')) as total_occupied
+                FROM tenants WHERE owner_id = %s
+            ),
+            expense_stats AS (
+                SELECT COALESCE(SUM(amount), 0) as total_spent 
+                FROM expenses WHERE owner_id = %s AND expense_month = %s
+            ),
+            capacity_stats AS (
+                SELECT COALESCE(SUM(capacity), 0) as total_capacity
+                FROM rooms r
+                JOIN properties p ON r.property_id = p.id
+                WHERE p.owner_id = %s
+            ),
+            payment_stats AS (
+                SELECT 
+                    COUNT(DISTINCT tenant_id) as tenants_paid,
+                    COALESCE(SUM(amount), 0) as total_collected
+                FROM payments p
+                JOIN tenants t ON p.tenant_id = t.id
+                WHERE t.owner_id = %s AND payment_month = %s AND p.status = 'COMPLETED'
+            ),
+            pending_payments_stats AS (
+                SELECT COUNT(*) as pending_count
+                FROM payments p
+                JOIN tenants t ON p.tenant_id = t.id
+                WHERE t.owner_id = %s AND p.status = 'PENDING'
+            ),
+            complaint_stats AS (
+                SELECT COUNT(*) as high_priority_count
+                FROM complaints
+                WHERE owner_id = %s AND status = 'PENDING' AND priority = 'HIGH'
+            )
+            SELECT 
+                ts.active_count, ts.expected_rent, ts.total_occupied,
+                es.total_spent,
+                cs.total_capacity,
+                ps.tenants_paid, ps.total_collected,
+                pps.pending_count,
+                comps.high_priority_count
+            FROM tenant_stats ts, expense_stats es, capacity_stats cs, payment_stats ps, 
+                 pending_payments_stats pps, complaint_stats comps
+        """, (owner_id, owner_id, current_month, owner_id, owner_id, current_month, owner_id, owner_id))
         
+        stats = cur.fetchone()
+        
+        # Unpack the monolithic result
+        active_count = stats[0] or 0
+        total_expected_rent = stats[1] or 0
+        total_tenants = stats[2] or 0
+        total_spent = stats[3] or 0
+        total_capacity = stats[4] or 0
+        tenants_paid = stats[5] or 0
+        total_collected = stats[6] or 0
+        total_pending_count = stats[7] or 0
+        high_priority_count = stats[8] or 0
+
+        # Calculated Fields
+        total_income = total_expected_rent # Or should this be collected? Usually Expected for "Revenue Potential", but let's stick to what it was: SUM(monthly_rent of active)
         net_profit = total_income - total_spent
-        
-        cur.execute("""
-            SELECT SUM(capacity) 
-            FROM rooms 
-            WHERE property_id IN (SELECT id FROM properties WHERE owner_id = %s)
-        """, (owner_id,))
-        capacity_row = cur.fetchone()
-        total_capacity = capacity_row[0] or 0
-        
-        cur.execute("SELECT COUNT(*) FROM tenants WHERE owner_id = %s AND onboarding_status IN ('ACTIVE', 'PENDING', 'NOTICE')", (owner_id,))
-        total_tenants = cur.fetchone()[0] or 0
         
         if total_capacity > 0:
             occupancy_rate = int((total_tenants / total_capacity) * 100)
@@ -95,38 +144,17 @@ def owner_dashboard():
         occupancy_rotation = int((occupancy_rate / 100) * 360)
         occupancy_rotation_style = f"transform: rotate({occupancy_rotation}deg);"
         
-        current_month = datetime.now().strftime('%Y-%m')
-        
-        cur.execute("""
-            SELECT COUNT(*), COALESCE(SUM(monthly_rent), 0) 
-            FROM tenants 
-            WHERE owner_id = %s AND onboarding_status = 'ACTIVE'
-        """, (owner_id,))
-        stats_row = cur.fetchone()
-        
-        total_active_tenants = stats_row[0] or 0
-        total_expected_rent = stats_row[1] or 0
-        
-        cur.execute("""
-            SELECT COUNT(DISTINCT tenant_id), COALESCE(SUM(amount), 0)
-            FROM payments
-            JOIN tenants ON payments.tenant_id = tenants.id
-            WHERE tenants.owner_id = %s AND payment_month = %s AND payments.status = 'COMPLETED'
-        """, (owner_id, current_month))
-        payment_row = cur.fetchone()
-        
-        tenants_paid = payment_row[0] or 0
-        total_collected = payment_row[1] or 0
-        
-        tenants_pending = max(0, total_active_tenants - tenants_paid)
+        tenants_pending = max(0, active_count - tenants_paid)
         
         if total_expected_rent > 0:
             collection_percentage = int((total_collected / total_expected_rent) * 100)
         else:
             collection_percentage = 0
-            
+        
         rent_collection_style = f"width: {collection_percentage}%;"
-
+        
+        # --- SEPARATE FETCHES FOR LISTS (Cannot be easily consolidated) ---
+        # 1. Pending Approvals
         cur.execute("""
             SELECT p.id, t.full_name, p.amount, p.payment_date, p.remarks, t.room_number 
             FROM payments p
@@ -136,12 +164,9 @@ def owner_dashboard():
             LIMIT 3
         """, (owner_id,))
         pending_approvals = cur.fetchall()
-        
-        cur.execute("SELECT COUNT(*) FROM payments p JOIN tenants t ON p.tenant_id = t.id WHERE t.owner_id = %s AND p.status = 'PENDING'", (owner_id,))
-        total_pending_count = cur.fetchone()[0] or 0
 
+        # 2. Expiring Leases
         thirty_days_later = datetime.now().date() + timedelta(days=30)
-        
         cur.execute("""
             SELECT full_name, lease_end, 
                    (lease_end - CURRENT_DATE) as days_remaining 
@@ -154,6 +179,7 @@ def owner_dashboard():
         """, (owner_id, thirty_days_later))
         expiring_leases = cur.fetchall()
         
+        # 3. Recent Movements
         cur.execute("""
             SELECT full_name, room_number, created_at
             FROM tenants
@@ -163,6 +189,7 @@ def owner_dashboard():
         """, (owner_id,))
         recent_movements = cur.fetchall()
         
+        # 4. Pending Complaints
         cur.execute("""
             SELECT c.title, t.room_number, t.full_name, c.priority, c.description
             FROM complaints c
@@ -179,12 +206,6 @@ def owner_dashboard():
         """, (owner_id,))
         pending_complaints = cur.fetchall()
         
-        cur.execute("""
-            SELECT COUNT(*) FROM complaints 
-            WHERE owner_id = %s AND status = 'PENDING' AND priority = 'HIGH'
-        """, (owner_id,))
-        high_priority_count = cur.fetchone()[0] or 0
-
         cur.execute("""
             SELECT type, title, description, created_at, metadata FROM (
                 SELECT 'PAYMENT' as type, 
