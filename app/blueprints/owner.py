@@ -8,6 +8,7 @@ from app.database.database import get_db_connection
 from app.utils.decorators import role_required
 from app.utils.mailer import send_email
 from app.utils.activity import log_activity
+from app.utils.pdf import generate_receipt
 from . import bp
 
 @bp.route('/owner/dashboard')
@@ -281,15 +282,67 @@ def approve_payment(payment_id):
         cur.execute("UPDATE payments SET status = 'COMPLETED' WHERE id = %s", (payment_id,))
         
         # Log Activity
-        cur.execute("SELECT p.amount, t.full_name, t.owner_id FROM payments p JOIN tenants t ON p.tenant_id = t.id WHERE p.id = %s", (payment_id,))
+        
+        # Log Activity
+        cur.execute("""
+            SELECT p.amount, t.full_name, t.owner_id, t.email, t.room_number, p.payment_month, p.payment_mode, p.payment_date, o.full_name
+            FROM payments p 
+            JOIN tenants t ON p.tenant_id = t.id 
+            JOIN owners o ON t.owner_id = o.id
+            WHERE p.id = %s
+        """, (payment_id,))
         pay_row = cur.fetchone()
+        
         if pay_row:
-             log_activity(pay_row[2], 'PAYMENT', f"Verified payment of ₹{pay_row[0]} from {pay_row[1]}", {'payment_id': payment_id})
+             # Unpack Details
+             amount, tenant_name, owner_id, tenant_email, room_no, month, mode, pay_date, owner_name = pay_row
+             
+             # 1. Log Activity
+             log_activity(owner_id, 'PAYMENT', f"Verified payment of ₹{amount} from {tenant_name}", {'payment_id': payment_id})
+             
+             # 2. Generate Receipt
+             receipt_data = {
+                 'transaction_id': str(payment_id),
+                 'date': pay_date,
+                 'tenant_name': tenant_name,
+                 'tenant_room': room_no,
+                 'amount': amount,
+                 'month': month,
+                 'payment_mode': mode,
+                 'owner_name': owner_name
+             }
+             pdf_buffer = generate_receipt(receipt_data)
+             pdf_bytes = pdf_buffer.getvalue()
+             
+             # 3. Send Email to Tenant (with Attachment)
+             send_email(
+                 to_email=tenant_email,
+                 subject=f"Ren Receipt: {month}",
+                 template="emails/rent_receipt.html",
+                 attachments=[{'name': f"Receipt_{month}.pdf", 'data': pdf_bytes, 'mime': 'application/pdf'}],
+                 tenant_name=tenant_name,
+                 month=month,
+                 amount=amount
+             )
+             
+             # 4. Notify Owner
+             send_email(
+                 to_email=session.get('email', 'dhruvharani8@gmail.com'), # Fallback if session missing
+                 subject=f"💰 Payment Verified: ₹{amount}",
+                 template="emails/payment_notification.html",
+                 owner_name=owner_name,
+                 tenant_name=tenant_name,
+                 room_number=room_no,
+                 month=month,
+                 amount=amount,
+                 mode=mode
+             )
 
         conn.commit()
         flash("Payment verified successfully!", "success")
     except Exception as e:
         conn.rollback()
+        print(f"Error verifying payment: {e}")
         flash("Error verifying payment.", "error")
     finally:
         cur.close()

@@ -1,11 +1,15 @@
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from flask import current_app, render_template
 from datetime import datetime
 
-def send_email(to_email, subject, template, **kwargs):
-    """Sends a professional HTML email using a template"""
+def send_email(to_email, subject, template, attachments=None, **kwargs):
+    """
+    Sends a professional HTML email using a template
+    attachments: list of dicts {'name': 'filename', 'mime': 'application/pdf', 'data': bytes}
+    """
     user = current_app.config.get('MAIL_USERNAME')
     pwd = current_app.config.get('MAIL_PASSWORD')
     
@@ -23,22 +27,30 @@ def send_email(to_email, subject, template, **kwargs):
         print(f"Subject: {subject}")
         print(f"Template: {template}")
         print(f"Context: {kwargs}")
+        if attachments:
+            print(f"Attachments: {[a['name'] for a in attachments]}")
         print(f"{'='*50}\n")
         return True
 
     try:
-        msg = MIMEMultipart("alternative")
+        msg = MIMEMultipart("mixed") if attachments else MIMEMultipart("alternative")
         msg['Subject'] = subject
         msg['From'] = f"PG Manager <{user}>"
         msg['To'] = to_email
 
-        # Create plain text version (simplified)
+        # Create message body
+        body_part = MIMEMultipart("alternative")
         text_content = f"Subject: {subject}\n\nPlease view this email in an HTML compatible mail client."
+        body_part.attach(MIMEText(text_content, "plain"))
+        body_part.attach(MIMEText(html_content, "html"))
         
-        part1 = MIMEText(text_content, "plain")
-        part2 = MIMEText(html_content, "html")
-        msg.attach(part1)
-        msg.attach(part2)
+        msg.attach(body_part)
+        
+        if attachments:
+            for attachment in attachments:
+                part = MIMEApplication(attachment['data'], Name=attachment['name'])
+                part['Content-Disposition'] = f'attachment; filename="{attachment["name"]}"'
+                msg.attach(part)
 
         with smtplib.SMTP(current_app.config['MAIL_SERVER'], current_app.config['MAIL_PORT']) as server:
             server.starttls()
