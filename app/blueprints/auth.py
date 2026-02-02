@@ -197,14 +197,22 @@ def signup():
             name = data.get('name')
             email = data.get('email', '').strip().lower()
             password = data.get('password')
+            confirm_password = data.get('confirm_password')
             role = data.get('role')
             otp_input = data.get('otp')
         else:
             name = request.form.get('name')
             email = request.form.get('email', '').strip().lower()
             password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
             role = request.form.get('role')
             otp_input = request.form.get('otp')
+            
+        if password != confirm_password:
+            msg = "Passwords do not match."
+            if request.is_json: return jsonify({'success': False, 'message': msg}), 400
+            flash(msg, "error")
+            return redirect(url_for('main.signup'))
 
         if not otp_input:
             msg = "OTP is required to verify email."
