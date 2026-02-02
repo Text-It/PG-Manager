@@ -1,8 +1,0 @@
-Starting Email Update Diagnostics...
-Target: testowner@example.com -> dhruvharani8@gmail.com
-Old User Exists: True (ID: d5851243-d60b-4c56-ad92-77acced1a262)
-New User Already Exists: False (ID: N/A)
-✅ No conflict. Proceeding with UPDATE.
-Updated 'users' table. Rows affected: 1
-Updated 'tenants' table. Rows affected: 0
-✅ Update COMMITTED successfully.

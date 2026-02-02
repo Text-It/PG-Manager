@@ -1,5 +1,0 @@
-DATABASE STATE VERIFICATION
-===========================
-
-Checking for: testowner@example.com
-  [FOUND] in 'users' table: ID=d5851243-d60b-4c56-ad92-77acced1a262
