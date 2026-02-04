@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "@tailwindcss/cli": "^4.1.18",
-    "tailwindcss": "^4.1.18",
-    "concurrently": "^8.0.0"
+    "concurrently": "^9.2.1",
+    "tailwindcss": "^4.1.18"
   },
   "scripts": {
     "build:css": "npx tailwindcss -i ./src/styles/input.css -o ./app/static/css/tailwind.css --minify",
