@@ -7,7 +7,7 @@
   "scripts": {
     "build:css": "npx tailwindcss -i ./src/styles/input.css -o ./app/static/css/tailwind.css --minify",
     "watch:css": "npx tailwindcss -i ./src/styles/input.css -o ./app/static/css/tailwind.css --watch",
-    "watch:flask": "python run.py",
-    "dev": "concurrently -k \"npm:watch:css\" \"npm:watch:flask\""
+    "watch:flask": "python -u run.py",
+    "dev": "concurrently -k \"npm run watch:css\" \"npm run watch:flask\""
   }
 }
