@@ -94,6 +94,7 @@ def send_otp():
     """API endpoint to generate and send OTP"""
     data = request.get_json()
     email = data.get('email', '').strip().lower()
+    role = data.get('role')
     
     if not email:
         return jsonify({'success': False, 'message': 'Email is required'}), 400
@@ -105,6 +106,15 @@ def send_otp():
         cur.execute("SELECT id FROM users WHERE email = %s", (email,))
         if cur.fetchone():
             return jsonify({'success': False, 'message': 'Email already registered. Please Login.'}), 400
+
+        # Pre-validate Tenant Invitation before sending OTP
+        if role == 'TENANT':
+            cur.execute("SELECT id, onboarding_status FROM tenants WHERE email = %s", (email,))
+            tenant_record = cur.fetchone()
+            if not tenant_record:
+                return jsonify({'success': False, 'message': 'You are not associated with any PG. Please verify your email or contact your PG Owner.'}), 400
+            if tenant_record[1] == 'DRAFT':
+                return jsonify({'success': False, 'message': 'Your admission is still in Draft. Please ask your Owner to finalize it.'}), 400
 
         # Generate OTP
         otp = str(random.randint(100000, 999999))

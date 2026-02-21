@@ -85,7 +85,11 @@ def owner_dashboard():
         else:
             occupancy_rate = 0
             
+        if occupancy_rate > 100:
+            occupancy_rate = 100
+            
         available_beds = max(0, total_capacity - total_tenants)
+        total_occupied = min(total_capacity, total_tenants)
         occupancy_rotation = int((occupancy_rate / 100) * 360)
         occupancy_rotation_style = f"transform: rotate({occupancy_rotation}deg);"
         
@@ -105,7 +109,7 @@ def owner_dashboard():
             SELECT COUNT(DISTINCT tenant_id), COALESCE(SUM(amount), 0)
             FROM payments
             JOIN tenants ON payments.tenant_id = tenants.id
-            WHERE tenants.owner_id = %s AND payment_month = %s AND payments.status = 'COMPLETED'
+            WHERE tenants.owner_id = %s AND payment_month = %s AND payments.status = 'COMPLETED' AND payments.remarks ILIKE '%%Rent%%'
         """, (owner_id, current_month))
         payment_row = cur.fetchone()
         

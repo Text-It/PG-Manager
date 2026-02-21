@@ -68,9 +68,7 @@ def demo_seed():
         # 3. Create Diverse Properties
         print("🏢 Building Properties...")
         properties = [
-            {"name": "Sunshine Residency", "address": "Andheri West, Mumbai", "type": "PG"},
-            {"name": "Urban Hive Co-Living", "address": "Koramangala, Bangalore", "type": "COLIVING"},
-            {"name": "Green Valley Student Housing", "address": "Pune University Road", "type": "HOSTEL"}
+            {"name": "Sunshine Residency", "address": "Andheri West, Mumbai", "type": "PG"}
         ]
         
         prop_ids = []
